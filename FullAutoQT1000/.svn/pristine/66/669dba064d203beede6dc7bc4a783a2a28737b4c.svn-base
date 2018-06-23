@@ -468,6 +468,19 @@
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
+      <widget class="QLabel" name="lb_Test_SampleUnit">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>30</y>
+         <width>31</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>个</string>
+       </property>
+      </widget>
       <widget class="QLineEdit" name="le_Test_SampleCount">
        <property name="geometry">
         <rect>
@@ -478,39 +491,12 @@
         </rect>
        </property>
       </widget>
-      <widget class="QLabel" name="lb_Test_CurrentEmerPosTitle">
-       <property name="geometry">
-        <rect>
-         <x>170</x>
-         <y>30</y>
-         <width>81</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>当前急诊：</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="lb_Test_CurrentEmerPos">
-       <property name="geometry">
-        <rect>
-         <x>250</x>
-         <y>30</y>
-         <width>41</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>无</string>
-       </property>
-      </widget>
       <zorder>le_Test_SampleCount</zorder>
       <zorder>lb_Test_SampleCountTitle</zorder>
       <zorder>lb_Test_ScanModel</zorder>
       <zorder>pb_Test_ScanModel</zorder>
       <zorder>lb_Test_SampleCount</zorder>
-      <zorder>lb_Test_CurrentEmerPosTitle</zorder>
-      <zorder>lb_Test_CurrentEmerPos</zorder>
+      <zorder>lb_Test_SampleUnit</zorder>
      </widget>
      <widget class="QGroupBox" name="groupBox_Test_SamEdit">
       <property name="geometry">

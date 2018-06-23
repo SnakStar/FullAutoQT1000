@@ -21,7 +21,6 @@
 #include"queryinterface.h"
 #include"qcinterface.h"
 #include"setinterface.h"
-#include"cqtprodb.h"
 
 namespace Ui {
 class MainWindow;
@@ -52,9 +51,6 @@ private:
     QueryInterface* m_QueryInterface;
     QCInterface*    m_QCInterface;
     SetInterface*   m_SetInterface;
-
-    //数据库对象
-    CQtProDB *m_devdb;
     
 private:
     Ui::MainWindow *ui;

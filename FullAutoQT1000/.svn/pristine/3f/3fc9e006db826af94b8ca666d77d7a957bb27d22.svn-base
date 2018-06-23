@@ -1,0 +1,514 @@
+#include "testinterface.h"
+#include "ui_testinterface.h"
+
+TestInterface::TestInterface(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::TestInterface)
+{
+    ui->setupUi(this);
+    //初始化圆界面
+    InitCircleUI();
+    //进度条控件
+    InitProgressBar();
+    //列表框
+    InitTableInfo();
+    //
+    InitDeviceSerial();
+    connect(&m_DeviceSerial,SIGNAL(readyRead()), this, SLOT(ReadDeviceData()) );
+}
+
+TestInterface::~TestInterface()
+{
+    delete ui;
+}
+
+
+/////////////////////////////////////////////////////////
+bool TestInterface::InitDeviceSerial()
+{
+    //串口初始化
+    m_DeviceSerial.setBaudRate(BAUD9600);
+#ifdef Q_OS_WIN32
+    m_DeviceSerial.setPortName("\\\\.\\com1");
+#else
+    m_DeviceSerial.setPortName("/dev/ttyO2");
+#endif
+    bool bOpen = m_DeviceSerial.open(QIODevice::ReadWrite);
+    if(!bOpen){
+        qDebug()<<"Device Serial open the fail";
+    }
+    return bOpen;
+}
+
+void TestInterface::ReadDeviceData()
+{
+    //qDebug()<<m_DeviceSerial.readAll().toHex().toUpper();
+}
+
+/*
+ *新建测试响应事件
+ */
+void TestInterface::on_pb_Test_NewTest_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+    m_TestCircle->HideAllCircle(true);
+    m_SampleCircle->HideAllCircle(true);
+}
+
+/*
+ *详细信息响应事件
+ */
+void TestInterface::on_pb_Test_DetailsInfo_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+    m_TestCircle->HideAllCircle(true);
+    m_SampleCircle->HideAllCircle(true);
+}
+
+/*
+ *详细页返回按钮响应事件
+ */
+void TestInterface::on_pb_Test_Back_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(0);
+    m_TestCircle->HideAllCircle(false);
+    m_SampleCircle->HideAllCircle(false);
+}
+
+/*
+ *详细页开始按钮响应事件
+ */
+void TestInterface::on_pb_Test_StartTest_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(0);
+    m_TestCircle->HideAllCircle(false);
+    m_SampleCircle->HideAllCircle(false);
+
+    ui->pb_Test_NewTest->setEnabled(false);
+    ui->pb_Test_StartTest->setEnabled(false);
+}
+
+
+/*
+ *初始化测试圆和样品圆界面
+ */
+void TestInterface::InitCircleUI()
+{
+    //测试盘
+    m_TestCircle = new CircleLayout(this);
+    QPoint posTest(210,200);
+    m_TestCircle->CreateCircleLayout(180,posTest,16);
+
+    //样品盘
+    m_SampleCircle = new CircleLayout(this);
+    QPoint posSam(730,200);
+    m_SampleCircle->CreateCircleLayout(180,posSam,20);
+
+}
+
+/********************************************************
+ *@Name:        InitProgressBar
+ *@Author:      HuaT
+ *@Description: 初始化进度条参数
+ *@Param1:      无
+ *@Param2:      无
+ *@Param3:      无
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2018-5-21
+********************************************************/
+void TestInterface::InitProgressBar()
+{
+    ui->proBar_Test_Reagent1->setStyleSheet("QProgressBar{background-color: #E6E6E6;border: 1px solid grey;border-radius: 1px;}");
+    ui->proBar_Test_Reagent2->setStyleSheet("QProgressBar{background-color: #E6E6E6;border: 1px solid grey;border-radius: 1px;}");
+    ui->proBar_Test_Reagent3->setStyleSheet("QProgressBar{background-color: #E6E6E6;border: 1px solid grey;border-radius: 1px;}");
+
+}
+
+/********************************************************
+ *@Name:        InitTableInfo
+ *@Author:      HuaT
+ *@Description: 初始化列表信息控件
+ *@Param1:      无
+ *@Param2:      无
+ *@Param3:      无
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2018-5-21
+********************************************************/
+void TestInterface::InitTableInfo()
+{
+    ui->tw_Test_TestInfo->setColumnCount(TABLE_COLUMN_COUNT);
+    ui->tw_Test_TestInfo->setRowCount(TABLE_ROWS_COUNT);
+    //
+    QStringList header;
+    header<<QObject::tr("急诊")<<QObject::tr("样本位")<<QObject::tr("样本编号")<<QObject::tr("测试项目");
+    ui->tw_Test_TestInfo->setHorizontalHeaderLabels(header);
+    ui->tw_Test_TestInfo->verticalHeader()->setHidden(true);
+
+    //ui->tw_Test_TestInfo->verticalHeader()->setHidden(true);
+    ui->tw_Test_TestInfo->setEditTriggers(QTableWidget::NoEditTriggers);
+    ui->tw_Test_TestInfo->setSelectionBehavior(QTableWidget::SelectRows);
+    //
+    ui->tw_Test_TestInfo->setColumnWidth(0,40);
+    ui->tw_Test_TestInfo->setColumnWidth(1,80);
+    ui->tw_Test_TestInfo->setColumnWidth(2,210);
+    ui->tw_Test_TestInfo->setColumnWidth(3,200);
+    ui->tw_Test_TestInfo->horizontalHeader()->setStretchLastSection(true);
+    //
+    ui->tw_Test_TestInfo->verticalHeader()->setDefaultSectionSize(37);
+    //
+    for(int i=0; i<16; i++){
+        //ui->tw_Test_TestInfo->setRowHeight(i,37);
+        QRadioButton* radio = new QRadioButton();
+        radio->setStyleSheet("margin-left:12px");
+
+        QTableWidgetItem* item1 = new QTableWidgetItem();
+        item1->setText(QString("%1").arg(i+1));
+        item1->setTextAlignment(Qt::AlignCenter);
+
+        QTableWidgetItem* item2 = new QTableWidgetItem();
+        item2->setText(QString("Number:%11111111").arg(i));
+        item2->setTextAlignment(Qt::AlignCenter);
+
+        QTableWidgetItem* item3 = new QTableWidgetItem();
+        item3->setText(QString("POS:%1").arg(i));
+        item3->setTextAlignment(Qt::AlignCenter);
+
+        ui->tw_Test_TestInfo->setCellWidget(i,0,radio);
+        ui->tw_Test_TestInfo->setItem(i,1,item1);
+        ui->tw_Test_TestInfo->setItem(i,2,item2);
+        ui->tw_Test_TestInfo->setItem(i,3,item3);
+    }
+    //ui->tw_Test_TestInfo->itemAt()
+}
+
+/********************************************************
+ *@Name:        ClearTableInfo
+ *@Author:      HuaT
+ *@Description: 清除列表控件中的内容
+ *@Param1:      无
+ *@Param2:      无
+ *@Param3:      无
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2018-5-21
+********************************************************/
+void TestInterface::ClearTableInfo()
+{
+    ui->tw_Test_TestInfo->setRowCount(0);
+    ui->tw_Test_TestInfo->setColumnCount(0);
+    InitTableInfo();
+}
+
+/*
+ *详细页样本全选勾选框响应事件
+ */
+void TestInterface::on_checkBox_Test_AllSelect_clicked()
+{
+
+}
+
+/********************************************************
+ *@Name:        ClearCellContent
+ *@Author:      HuaT
+ *@Description: 清除指定单元格内容
+ *@Param1:      单元格所在列
+ *@Param2:      单元格所在行
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2018-5-21
+********************************************************/
+void TestInterface::ClearCellContent(int Column, int Row)
+{
+    QTableWidgetItem* item = ui->tw_Test_TestInfo->item(Row,Column);
+    item->setText("");
+}
+
+/********************************************************
+ *@Name:        SetCellContent
+ *@Author:      HuaT
+ *@Description: 清除指定单元格内容
+ *@Param1:      单元格所在列
+ *@Param2:      单元格所在行
+ *@Param3:      单元格内容
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2018-5-21
+********************************************************/
+void TestInterface::SetCellContent(int Column, int Row, QString strContent)
+{
+    QTableWidgetItem* item = ui->tw_Test_TestInfo->item(Row,Column);
+    item->setText(strContent);
+}
+
+
+/*
+ *详细页清除按钮响应事件
+ */
+void TestInterface::on_pb_Test_ClearTestName_clicked()
+{
+    if(ui->checkBox_Test_AllSelect->isChecked() == true){
+        if(QMessageBox::Yes == QMessageBox::information(this,"提示","删除所有？",QMessageBox::Yes|QMessageBox::No)){
+            for(int i=0; i<16; i++){
+                ClearCellContent(3, i);
+            }
+        }
+    }else{
+        int nCurRow = ui->tw_Test_TestInfo->currentRow();
+        if(nCurRow == -1){
+            return ;
+        }
+        ClearCellContent(3,nCurRow);
+    }
+    ui->lb_Test_TestProject->setText("");
+}
+
+
+/*
+ *详细页自动扫码按钮响应事件
+ */
+void TestInterface::on_pb_Test_ScanModel_clicked()
+{
+
+}
+
+/********************************************************
+ *@Name:        TransformProjectName
+ *@Author:      HuaT
+ *@Description: 项目名称转化,hsCPR在hsCRP/PCT经过转化后为PCT
+ *@Param1:      目标名称
+ *@Param2:      现有的名称集,hsCRP/PCT/cTnI格式
+ *@Return:      返回处理过后的字符串
+ *@Version:     1.0
+ *@Date:        2018-5-22
+********************************************************/
+QString TestInterface::TransformProjectName(QString strCurName, QString strNameRecord)
+{
+    QString strResult = "";
+
+    if(strNameRecord.isEmpty()){
+        strResult = strCurName;
+    }else{
+        QStringList listName = strNameRecord.split("/");
+        int nIndex = listName.indexOf(strCurName);
+        if(nIndex == -1){
+            listName.append(strCurName);
+        }else{
+            listName.removeAt(nIndex);
+        }
+        int nCount = listName.size();
+        for(int n=0; n<nCount; n++){
+            strResult += listName.at(n);
+            if(n == nCount-1){
+                break;
+            }
+            strResult += "/";
+        }
+    }
+    return strResult;
+}
+
+
+/********************************************************
+ *@Name:        ResponseProjectButton
+ *@Author:      HuaT
+ *@Description: 响应指定按钮项目名称
+ *@Param1:      按钮对象
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2018-5-22
+********************************************************/
+void TestInterface::ResponseProjectButton(QPushButton *butObj)
+{
+    QString strResult = "";
+    QString strCurName = butObj->text();
+    QString strNameRecord = ui->lb_Test_TestProject->text();
+
+    strResult = TransformProjectName(strCurName,strNameRecord);
+
+    //qDebug()<<ui->checkBox_Test_AllSelect->checkState();
+    if(ui->checkBox_Test_AllSelect->isChecked() == true){
+        for(int n=0; n<16; n++){
+            SetCellContent(3,n,strResult);
+        }
+    }else{
+        //
+        int nCurRow = ui->tw_Test_TestInfo->currentRow();
+        if(nCurRow == -1){
+            return;
+        }
+        SetCellContent(3,nCurRow,strResult);
+    }
+    ui->lb_Test_TestProject->setText(strResult);
+}
+
+/*
+ *详细页测试项目1按钮响应事件
+ */
+void TestInterface::on_pb_Test_TestName1_clicked()
+{
+    ResponseProjectButton(ui->pb_Test_TestName1);
+}
+
+/*
+ *详细页测试项目2按钮响应事件
+ */
+void TestInterface::on_pb_Test_TestName2_clicked()
+{
+    ResponseProjectButton(ui->pb_Test_TestName2);
+}
+
+/*
+ *详细页测试项目3按钮响应事件
+ */
+void TestInterface::on_pb_Test_TestName3_clicked()
+{
+    ResponseProjectButton(ui->pb_Test_TestName3);
+}
+
+/*
+ *详细页测试项目4按钮响应事件
+ */
+void TestInterface::on_pb_Test_TestName4_clicked()
+{
+    ResponseProjectButton(ui->pb_Test_TestName4);
+}
+
+/*
+ *详细页急诊勾选框响应事件
+ */
+void TestInterface::on_checkBox_Test_Emergency_clicked()
+{
+
+}
+
+/*
+ *详细页数字1响应事件
+ */
+void TestInterface::on_pb_Test_One_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"1");
+}
+
+/*
+ *详细页数字2响应事件
+ */
+void TestInterface::on_pb_Test_Two_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"2");
+}
+
+/*
+ *详细页数字3响应事件
+ */
+void TestInterface::on_pb_Test_Three_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"3");
+}
+
+/*
+ *详细页数字4响应事件
+ */
+void TestInterface::on_pb_Test_Four_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"4");
+}
+
+/*
+ *详细页数字5响应事件
+ */
+void TestInterface::on_pb_Test_Five_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"5");
+}
+
+/*
+ *详细页数字6响应事件
+ */
+void TestInterface::on_pb_Test_Six_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"6");
+}
+
+/*
+ *详细页数字7响应事件
+ */
+void TestInterface::on_pb_Test_Seven_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"7");
+}
+
+/*
+ *详细页数字8响应事件
+ */
+void TestInterface::on_pb_Test_Eight_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"8");
+}
+
+/*
+ *详细页数字9响应事件
+ */
+void TestInterface::on_pb_Test_Nine_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"9");
+}
+
+/*
+ *详细页清除按钮响应事件
+ */
+void TestInterface::on_pb_Test_Clear_clicked()
+{
+    ui->le_Test_SampleNumber->setText("");
+}
+
+/*
+ *详细页数字0响应事件
+ */
+void TestInterface::on_pb_Test_Zero_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    ui->le_Test_SampleNumber->setText(strCur+"0");
+}
+
+/*
+ *详细页确定按钮响应事件
+ */
+void TestInterface::on_pb_Test_OK_clicked()
+{
+    QString strCur = ui->le_Test_SampleNumber->text();
+    if(strCur.isEmpty() || strCur.trimmed().isEmpty()){
+        return;
+    }
+    int nCurRow = ui->tw_Test_TestInfo->currentRow();
+    if(nCurRow == -1){
+        QMessageBox::information(this,QObject::tr("提示"),QObject::tr("请先选中行!"),QMessageBox::Ok);
+    }else{
+        SetCellContent(2,nCurRow,strCur);
+    }
+}
+
+/*
+ *详细页列表点击响应事件
+ */
+void TestInterface::on_tw_Test_TestInfo_cellClicked(int row, int column)
+{
+    QTableWidgetItem* itemPos = ui->tw_Test_TestInfo->item(row,1);
+    QTableWidgetItem* itemNum = ui->tw_Test_TestInfo->item(row,2);
+    QTableWidgetItem* itemName = ui->tw_Test_TestInfo->item(row,3);
+    ui->lb_Test_TestProject->setText(itemName->text());
+    ui->le_Test_SampleNumber->setText(itemNum->text());
+    ui->lb_Test_CurrentSamPos->setText(itemPos->text());
+}
+
+

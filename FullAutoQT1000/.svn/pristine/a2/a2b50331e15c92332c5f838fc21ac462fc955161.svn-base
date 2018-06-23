@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,9 +20,7 @@ SOURCES += main.cpp\
     qextserial/qextserialport.cpp \
     circlelayout.cpp \
     qcinterface.cpp \
-    setinterface.cpp \
-    cqtprodb.cpp \
-    cutilsettings.cpp
+    setinterface.cpp
 
 HEADERS  += mainwindow.h \
     testinterface.h \
@@ -32,10 +30,7 @@ HEADERS  += mainwindow.h \
     qextserial/qextserialport.h \
     circlelayout.h \
     qcinterface.h \
-    setinterface.h \
-    Common.h \
-    cqtprodb.h \
-    cutilsettings.h
+    setinterface.h
 
 FORMS    += mainwindow.ui \
     testinterface.ui \

@@ -22,22 +22,15 @@
 #include <QStringList>
 #include <QMessageBox>
 #include <QRadioButton>
-#include <QVector>
-#include <QTimer>
-#include "Common.h"
 #include "circlelayout.h"
 #include "qextserial/qextserialport.h"
 
 #define TABLE_ROWS_COUNT    16
-#define TABLE_COLUMN_COUNT  3
+#define TABLE_COLUMN_COUNT  4
 
 namespace Ui {
 class TestInterface;
 }
-
-
-
-
 
 class TestInterface : public QDialog
 {
@@ -47,10 +40,7 @@ public:
     explicit TestInterface(QWidget *parent = 0);
     ~TestInterface();
 private slots:
-    //接收串口数据
     void ReadDeviceData();
-    //倒计时函数
-    void CountDown();
 private slots:
     void on_pb_Test_NewTest_clicked();
 
@@ -71,6 +61,8 @@ private slots:
     void on_pb_Test_TestName4_clicked();
 
     void on_checkBox_Test_AllSelect_clicked();
+
+    void on_checkBox_Test_Emergency_clicked();
 
     void on_pb_Test_One_clicked();
 
@@ -100,21 +92,6 @@ private slots:
 
     void on_tw_Test_TestInfo_cellClicked(int row, int column);
 
-    void on_checkBox_Test_Emergency_clicked(bool checked);
-
-private:
-    //解析条码数据
-    void ParseScanBarCodeInfo(const QByteArray &ScanData);
-    //显示条码信息
-    void ShowBarCodeInfo(QVector<TestInfo> vecTestInfo);
-    //解析加样数据
-    void ParseLoadSampleInfo(const QByteArray &SampleData, SampleInfo &si);
-    //处理加样完成
-    void ProceStartLoadSample(const QByteArray& SampleData);
-    //处理倒计时事件
-    void ProceCountDownEvent(quint8 nReagentIndex, quint8 nSamplePos);
-    //处理加样完成
-    void PorceLoadSampleComplete(const QByteArray& AckData);
 private:
     //初始化设备串口
     bool InitDeviceSerial();
@@ -126,10 +103,7 @@ private:
     void InitTableInfo();
     //清除列表控件中的内容
     void ClearTableInfo();
-    //初始化测试数据
-    void InitVectorTestInfo();
-    //发送串口数据
-    void SendSerialData(QextSerialPort &ser, quint16 nFuncIndex, QByteArray arrData);
+    //
 private:
     // 清除指定单元格内容
     void ClearCellContent(int Column, int Row);
@@ -139,21 +113,6 @@ private:
     QString TransformProjectName(QString strCurName,QString strNameRecord);
     //响应指定按钮项目名称
     void ResponseProjectButton(QPushButton* butObj);
-    //设置测试时信息页的编辑按钮状态
-    void SetRuntimeButtonEnable(bool isTrue);
-    //设置测试中各个按钮状态
-    void SetTestStatus(bool isTrue);
-    //设置行颜色
-    void SetRowColor(QColor color, quint8 nRow);
-    //获取校验和
-    quint32 GetCheckSum(QByteArray byarrDataLength,QByteArray byarrData);
-    //整形转字节型
-    QByteArray IntToBytes(quint32 nValue,quint8 nCount=4);
-    //字节形转整型
-    quint32 BytesToInt(QByteArray byarr);
-    //测试完成
-    //void TestComplete();
-
 private:
     //测试圆
     CircleLayout* m_TestCircle;
@@ -161,12 +120,8 @@ private:
     CircleLayout* m_SampleCircle;
     //仪器串口对象
     QextSerialPort m_DeviceSerial;
-    //仪器数据
+    //
     QByteArray     m_DeviceData;
-    //测试信息
-    QVector<TestInfo> m_vecTestInfo;
-    //测试索引
-    quint8         m_nTestIndex;
 private:
     Ui::TestInterface *ui;
 };

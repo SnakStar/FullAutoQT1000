@@ -22,15 +22,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //设置指定宽高
+
+    //
     this->setFixedSize(this->width(),this->height());
-    //初始化主界面
+    //
     InitMainInterface();
-    //连接数据库
-    m_devdb = new CQtProDB();
-    m_devdb->ConnectDB("./autodb.db");
-
-
 }
 
 /********************************************************
@@ -58,10 +54,10 @@ MainWindow::~MainWindow()
  ********************************************************/
 void MainWindow::InitMainInterface()
 {
-    m_TestInterface = new TestInterface(this);
-    m_QueryInterface = new QueryInterface(this);
-    m_QCInterface    = new QCInterface(this);
-    m_SetInterface   = new SetInterface(this);
+    m_TestInterface = new TestInterface;
+    m_QueryInterface = new QueryInterface;
+    m_QCInterface    = new QCInterface;
+    m_SetInterface   = new SetInterface;
     ui->stackedWidget->addWidget(m_TestInterface);
     ui->stackedWidget->addWidget(m_QueryInterface);
     ui->stackedWidget->addWidget(m_QCInterface);
@@ -70,33 +66,21 @@ void MainWindow::InitMainInterface()
     ui->stackedWidget->setCurrentIndex(0);
 }
 
-/*
- *测试响应事件
- */
 void MainWindow::on_pb_Main_Test_clicked()
 {
     ui->stackedWidget->setCurrentIndex(0);
 }
 
-/*
- *查询响应事件
- */
 void MainWindow::on_pb_Main_Query_clicked()
 {
     ui->stackedWidget->setCurrentIndex(1);
 }
 
-/*
- *质控响应事件
- */
 void MainWindow::on_pb_Main_QC_clicked()
 {
     ui->stackedWidget->setCurrentIndex(2);
 }
 
-/*
- *设置响应事件
- */
 void MainWindow::on_pb_Main_Setting_clicked()
 {
     ui->stackedWidget->setCurrentIndex(3);
