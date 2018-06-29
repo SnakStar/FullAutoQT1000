@@ -1,0 +1,122 @@
+#ifndef COMMANDSTRUCTDEF_H
+#define COMMANDSTRUCTDEF_H
+
+#include <QTimer>
+
+
+//条码长度
+#define BARCODELENGTH 16
+
+#define SAMPLECOUNT   16
+////////////////////////////条码信息/////////////////////////
+typedef struct _Scan_Info_t{
+
+    unsigned char CODE[BARCODELENGTH];   //条码
+    unsigned int  Scan_State; 	         //扫描状态
+
+}Scan_Info_t;
+
+typedef struct _Bar_Code_Info{
+    Scan_Info_t scaninfo[SAMPLECOUNT];
+}ScanBarCodeInfo;
+////////////////////////////////////////////////////////////
+
+
+////////////////////////////条码信息/////////////////////////
+
+typedef struct _SamplePos{
+    //样本位置
+    quint32 m_nSamplePos;
+    //试剂盘位置
+    quint32 m_nReagentPos;
+}SamplePos;
+
+
+
+typedef struct _SampleInfo{
+    //样本位置
+    SamplePos m_SamPos;
+    //样本编号
+    QString  m_strSampleNo;
+    _SampleInfo(){
+        m_SamPos.m_nReagentPos = -1;
+        m_SamPos.m_nSamplePos  = -1;
+        m_strSampleNo = "";
+    }
+    void Clear(){
+        _SampleInfo();
+    }
+}SampleInfo;
+////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////条码信息/////////////////////////
+
+////////////////////////////////////////////////////////////
+
+////////////////////////////测试信息/////////////////////////
+
+////////////////////////////////////////////////////////////
+
+struct MsgData{
+    quint32 m_frameHeader;
+    quint32 m_ProductID;
+    quint16 m_DeviceAdd;
+    quint16 m_FuncIndex;
+    quint32 m_DataLength;
+    QByteArray m_Data;
+    quint32 m_CRC;
+    quint32 m_frameEnd;
+    MsgData(){
+        m_frameHeader = 0x5A1AA1A5;
+        m_ProductID   = 0;
+        m_DeviceAdd   = 0;
+        m_FuncIndex   = 0;
+        m_DataLength  = 0;
+        m_Data.clear();
+        m_CRC         = 0;
+        m_frameEnd    = 0xA5A11A5A;
+    }
+    void Clear(){
+        MsgData();
+    }
+};
+
+struct TestInfo{
+    SampleInfo m_si;
+    //项目名称
+    QString  m_strItemName;
+    //是否测试
+    bool     m_bIsTest;
+    //定时器
+    QTimer*  m_timer;
+    //是否开始计时
+    bool m_bIsTime;
+    //总测试时间
+    quint16 m_nCountTime;
+    //剩余测试时间
+    quint16 m_nRemainTime;
+    //数据结果
+    QByteArray m_byarrData;
+    TestInfo(){
+        m_bIsTime  = false;
+        m_bIsTest  = false;
+        //m_bIsEmerg = false;
+        m_strItemName = "";
+        m_byarrData.clear();
+        m_nCountTime  = -1;
+        m_nRemainTime = -1;
+        m_si.Clear();
+    }
+    void Clear(){
+        TestInfo();
+    }
+};
+
+
+
+
+
+#endif // COMMANDSTRUCTDEF_H

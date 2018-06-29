@@ -1,0 +1,53 @@
+#ifndef COMMON_H
+#define COMMON_H
+
+
+//响应返回帧
+#define PL_FUN_ACK                          0x0001
+//仪器报警
+#define PL_FUN_ALARM                        0x0002
+
+//////////////////////////////////////////////////
+//开机自检
+#define PL_FUN_AM_HARDWEAR_CHECK            0x0010
+//新建测试
+#define PL_FUN_AM_NEW_TEST                  0x0011
+//扫码结果
+#define PL_FUN_AM_SCAN_RESULT               0x0012
+//开始加样
+#define PL_FUN_AM_START_SAMPLE              0x0013
+//加样完成
+#define PL_FUN_AM_SAMPLE_COMPLETE           0x0014
+//准备测试
+#define PL_FUN_AM_PREPARE_TEST              0x0015
+//测试准备完成
+#define PL_FUN_AM_PREPARE_TEST_COMPLETE     0x0016
+//开始测试
+#define PL_FUN_AM_START_TEST                0x0017
+//测试结果
+#define PL_FUN_AM_TEST_RESULT               0x0018
+//准备卸卡
+#define PL_FUN_AM_PREPARE_UNSTALL           0x0019
+//卸卡准备完成
+#define PL_FUN_AM_PREPARE_UNSTALL_COMPLETE  0x001A
+//开始卸卡
+#define PL_FUN_AM_START_UNSTALL             0x001B
+//卸卡完成
+#define PL_FUN_AM_START_UNSTALL_COMPLETE    0x001C
+//ID卡数据
+#define PL_FUN_AM_ID_CARD_DATA              0x001D
+
+//备用
+//#define PL_FUN_AM_PREPARE_UNSTALL           0x0015
+//#define PL_FUN_AM_START_UNSTALL             0x0016
+
+//////////////////////////////////////////////////////////////////////////////
+#ifndef MAKEWORD
+#define MAKEWORD(low,high)		    (((quint8)(low)) | (((quint8)(high)) << 8))
+#endif
+
+#ifndef MAKEFOURWORD
+#define MAKEFOURWORD(A,B,C,D)		(((quint8)(A)) | (((quint8)(B)) << 8) | (((quint8)(C)) << 16) | (((quint8)(D)) << 24) )
+#endif
+
+#endif // COMMON_H
