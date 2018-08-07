@@ -124,7 +124,7 @@ private:
     //解析串口数据
     bool ParseSerialData(const QByteArray& Data);
     //解析条码数据
-    void ParseScanBarCodeInfo(const QByteArray &ScanData, bool bEmer=false);
+    void ParseScanBarCodeInfo(const QByteArray &ScanData);
     //显示条码信息
     void ShowBarCodeInfo(QVector<TestInfo> vecTestInfo);
     //解析加样数据
@@ -155,10 +155,6 @@ private:
     QByteArray m_byarrCheckData;
     //控制板串口数据
     QByteArray m_byarrControlData;
-private:
-    //测试函数
-    //
-    QByteArray StrToBytes(QString str);
 private:
     //初始化检测板串口
     bool InitCheckPanelsSerial();
@@ -266,7 +262,7 @@ private:
     bool            m_bEmerStatus;
     //测试状态
     bool            m_bTestStatus;
-    //结果对象
+    //
     ResultCalc      m_ResultCalc;
 private:
     Ui::TestInterface *ui;

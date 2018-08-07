@@ -110,7 +110,7 @@ bool TestInterface::InitCheckPanelsSerial()
     //串口初始化
     m_CheckPanelsSerial.setBaudRate(BAUD19200);
 #ifdef Q_OS_WIN32
-    m_CheckPanelsSerial.setPortName("\\\\.\\com9");
+    m_CheckPanelsSerial.setPortName("\\\\.\\com10");
     //m_CheckPanelsSerial.setTimeout(1000);
     //m_CheckPanelsSerial.setPortName("\\\\.\\com1");
 #else
@@ -378,7 +378,7 @@ void TestInterface::AllTestComplete()
 void TestInterface::ParseIDCardData(const QByteArray &AckData)
 {
     if(AckData.size() != 264){
-        qDebug()<<QObject::tr("ID卡数据长度不符：")<<AckData.size();
+        qDebug()<<"ID卡数据长度不符："<<AckData.size();
         return;
     }
     quint32 nReagentPos = BytesToInt(AckData.mid(0,4));
@@ -472,7 +472,7 @@ bool TestInterface::InitControlPanelsSerial()
     //串口初始化
     m_ControlPanelsSerial.setBaudRate(BAUD19200);
 #ifdef Q_OS_WIN32
-    m_ControlPanelsSerial.setPortName("\\\\.\\com10");
+    m_ControlPanelsSerial.setPortName("\\\\.\\com9");
     //m_ControlPanelsSerial.setPortName("\\\\.\\com3");
     //m_ControlPanelsSerial.setTimeout(1000);
 #else
@@ -586,20 +586,20 @@ void TestInterface::ParseControlPanelsAlarmData(const QByteArray &AlarmData)
         //提醒用户
         //strContent = QObject::tr("ID卡盒被移除");
         //QMessageBox::information(this,QObject::tr("Note"),strContent,QMessageBox::Ok);
-        qDebug()<<QString("ID卡被移除消息22").toStdString().c_str();
+        qDebug()<<"ID卡被移除消息";
     }else if(byarrAlarmType.at(30) == 49){
         //ID卡错误
-        qDebug()<<QObject::tr("ID卡错误消息");
+        qDebug()<<"ID卡错误消息";
         //提醒用户更换ID卡槽
     }else if(byarrAlarmType.at(29) == 49){
         //仪器运行时错误
-        qDebug()<<QObject::tr("仪器运行时错误消息");
+        qDebug()<<"仪器运行时错误消息";
     }else if(byarrAlarmType.at(28) == 49){
         //复位错误
-        qDebug()<<QObject::tr("仪器复位错误消息");
+        qDebug()<<"仪器复位错误消息";
     }else if(byarrAlarmType.at(27) == 49){
         //缓冲液为空
-        qDebug()<<QObject::tr("缓冲液为空消息");
+        qDebug()<<"缓冲液为空消息";
     }else if(byarrAlarmType.at(26) == 49){
         //样本为空
         strContent = QObject::tr("样本%1未吸到样本，测试失败，请稍后重新测试!").arg(nAlarmData+1);

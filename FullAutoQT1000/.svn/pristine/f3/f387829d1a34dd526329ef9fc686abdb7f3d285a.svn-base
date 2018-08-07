@@ -9,8 +9,7 @@ TestInterface::TestInterface(QWidget *parent) :
     ui(new Ui::TestInterface)
 {
     ui->setupUi(this);
-    ui->checkBox_Test_Emergency->hide();
-    //MainWindow* MainWnd = (MainWindow*)parent;
+    MainWindow* MainWnd = (MainWindow*)parent;
     //
     m_pMainWnd = parent;
     //急诊状态
@@ -24,9 +23,9 @@ TestInterface::TestInterface(QWidget *parent) :
     //ui->pb_Test_NewTest->setEnabled(false);
     //ui->pb_Test_DetailsInfo->setEnabled(false);
     //获取配置文件对象
-    m_settins = ((MainWindow*)m_pMainWnd)->GetSettingsObj();
+    m_settins = MainWnd->GetSettingsObj();
     //获取数据库对象
-    m_Devdb = ((MainWindow*)m_pMainWnd)->GetDatabaseObj();
+    m_Devdb = MainWnd->GetDatabaseObj();
     //初始化圆界面
     InitCircle();
     //进度条控件,显示试剂卡剩余数量
@@ -49,21 +48,6 @@ TestInterface::TestInterface(QWidget *parent) :
     //查询测试板初始化情况
     connect(&m_TimerTestCheck, SIGNAL(timeout()), this, SLOT(TestCheckFunc()) );
     m_TimerTestCheck.start(1000);
-
-    //测试用数据卡
-    QString strIDCard="313031303130303030303031313120202020202000B405013230313730363135130B1C5A87020100302C30303030424E50202020202020202020202020202020202070672F6D6C2020202020015F00050000000000000B000303052B00093E00002B000002154F2B00000000002B00000000002B0000000000023332052B00151200002D0000B232002B00000000002B00000000002B00000000000B5831052B00106600002B00006A1F002B00000000002B00000000002B0000000000000000002B00000000002B00000000002B00000000002B00000000002B0000000000000000002B00000000002B00000000002B00000000002B00000000002B0000000000FFFFFF";
-    IDCardInfo ii;
-    ii.m_byarrIDCardData = StrToBytes(strIDCard);
-    ii.m_strTestItem = ii.m_byarrIDCardData.mid(46,20).trimmed();
-    m_mapIDCardInfo["1"] = ii;
-
-    m_mapTestItemPos[ii.m_strTestItem] = "1";
-
-    UpdateIDCardInfo(1,50,"BNP");
-    //更新测试按钮
-    InitValidTestItem();
-
-
 
 
     //m_mapTestItemPos.insert("hsCRP","1");
@@ -91,15 +75,6 @@ TestInterface::~TestInterface()
     delete ui;
 }
 
-QByteArray TestInterface::StrToBytes(QString str)
-{
-    QByteArray byarrData;
-    for(int n=0; n<str.size(); n+=2){
-        byarrData.append( str.mid(n,2).toInt(0,16) );
-    }
-    return byarrData;
-}
-
 /*
  *
  *初始化检测板串口
@@ -110,7 +85,7 @@ bool TestInterface::InitCheckPanelsSerial()
     //串口初始化
     m_CheckPanelsSerial.setBaudRate(BAUD19200);
 #ifdef Q_OS_WIN32
-    m_CheckPanelsSerial.setPortName("\\\\.\\com9");
+    m_CheckPanelsSerial.setPortName("\\\\.\\com10");
     //m_CheckPanelsSerial.setTimeout(1000);
     //m_CheckPanelsSerial.setPortName("\\\\.\\com1");
 #else
@@ -378,7 +353,7 @@ void TestInterface::AllTestComplete()
 void TestInterface::ParseIDCardData(const QByteArray &AckData)
 {
     if(AckData.size() != 264){
-        qDebug()<<QObject::tr("ID卡数据长度不符：")<<AckData.size();
+        qDebug()<<"ID卡数据长度不符："<<AckData.size();
         return;
     }
     quint32 nReagentPos = BytesToInt(AckData.mid(0,4));
@@ -396,7 +371,6 @@ void TestInterface::ParseIDCardData(const QByteArray &AckData)
     //更新测试按钮
     InitValidTestItem();
 }
-
 
 /********************************************************
  *@Name:        RecvCheckPanelsData
@@ -472,7 +446,7 @@ bool TestInterface::InitControlPanelsSerial()
     //串口初始化
     m_ControlPanelsSerial.setBaudRate(BAUD19200);
 #ifdef Q_OS_WIN32
-    m_ControlPanelsSerial.setPortName("\\\\.\\com10");
+    m_ControlPanelsSerial.setPortName("\\\\.\\com9");
     //m_ControlPanelsSerial.setPortName("\\\\.\\com3");
     //m_ControlPanelsSerial.setTimeout(1000);
 #else
@@ -543,11 +517,6 @@ void TestInterface::RecvControlPanelsData()
             //收到ID卡数据
             ParseIDCardData(CurrData.m_Data);
             break;
-        case PL_FUN_AM_ID_EMER_SCANRESULT:
-            //qDebug()<<CurrData.m_Data.size();
-            ParseScanBarCodeInfo(CurrData.m_Data,true);
-            ShowBarCodeInfo(m_vecTestInfo);
-            break;
         default:
             qDebug()<<"command is invalid!";
         }
@@ -586,26 +555,24 @@ void TestInterface::ParseControlPanelsAlarmData(const QByteArray &AlarmData)
         //提醒用户
         //strContent = QObject::tr("ID卡盒被移除");
         //QMessageBox::information(this,QObject::tr("Note"),strContent,QMessageBox::Ok);
-        qDebug()<<QString("ID卡被移除消息22").toStdString().c_str();
+        qDebug()<<"ID卡被移除消息";
     }else if(byarrAlarmType.at(30) == 49){
         //ID卡错误
-        qDebug()<<QObject::tr("ID卡错误消息");
+        qDebug()<<"ID卡错误消息";
         //提醒用户更换ID卡槽
     }else if(byarrAlarmType.at(29) == 49){
         //仪器运行时错误
-        qDebug()<<QObject::tr("仪器运行时错误消息");
+        qDebug()<<"仪器运行时错误消息";
     }else if(byarrAlarmType.at(28) == 49){
         //复位错误
-        qDebug()<<QObject::tr("仪器复位错误消息");
+        qDebug()<<"仪器复位错误消息";
     }else if(byarrAlarmType.at(27) == 49){
         //缓冲液为空
-        qDebug()<<QObject::tr("缓冲液为空消息");
+        qDebug()<<"缓冲液为空消息";
     }else if(byarrAlarmType.at(26) == 49){
         //样本为空
         strContent = QObject::tr("样本%1未吸到样本，测试失败，请稍后重新测试!").arg(nAlarmData+1);
         QMessageBox::information(this,QObject::tr("Note"),strContent,QMessageBox::Ok);
-    }else{
-        qDebug()<<"未定义错误！！！！！！！！！";
     }
 
 }
@@ -670,9 +637,7 @@ void TestInterface::on_pb_Test_NewTest_clicked()
     bool isScan = true;
     if(isScan){
         //发送扫码信息
-        QByteArray byarrData;
-        byarrData.append(IntToBytes(0));
-        SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_NEW_TEST,byarrData);
+        SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_NEW_TEST);
     }else{
         //自动编码
     }
@@ -777,9 +742,7 @@ QByteArray TestInterface::PacketTestInfoToByarr(QVector<TestInfo> &vecTestInfo)
                 QMessageBox::information(this,QObject::tr("Note"),strMsg,QMessageBox::Ok);
                 return QByteArray("");
             }else{
-                quint8 nIDCardIndex = m_mapTestItemPos.value(strTestItem).toUShort();
-                (*iter).m_nIDCardIndex = nIDCardIndex;
-                switch( nIDCardIndex ){
+                switch(m_mapTestItemPos.value(strTestItem).toInt()){
                 case 1:
                     byarrTestInfo.append(IntToBytes(1));
                     break;
@@ -823,9 +786,7 @@ QByteArray TestInterface::PacketTestInfoToByarr(QVector<TestInfo> &vecTestInfo,b
             QMessageBox::information(this,QObject::tr("Note"),strMsg,QMessageBox::Ok);
             return QByteArray("");
         }else{
-            quint8 nIDCardIndex = m_mapTestItemPos.value(strTestItem).toUShort();
-            tiEmer.m_nIDCardIndex = nIDCardIndex;
-            switch( nIDCardIndex ){
+            switch(m_mapTestItemPos.value(strTestItem).toInt()){
             case 1:
                 byarrTestInfo.append(IntToBytes(1));
                 break;
@@ -1184,15 +1145,7 @@ void TestInterface::on_pb_Test_ScanModel_clicked()
     QString strScanModel = ui->pb_Test_ScanModel->text();
     if(strScanModel == QObject::tr("自动扫码")){
         //qDebug()<<"auto scan";
-        QByteArray byarrData;
-        if(m_bEmerStatus){
-            //发送扫码信息
-            byarrData.append(IntToBytes(16));
-            SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_NEW_TEST,byarrData);
-        }else{
-            byarrData.append(IntToBytes(0));
-            SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_NEW_TEST,byarrData);
-        }
+        SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_NEW_TEST);
     }else{
         //qDebug()<<"manual scan";
     }
@@ -1720,7 +1673,7 @@ void TestInterface::on_pb_Test_InsertEmer_clicked()
         //如果可用则发送停止发送下一个样本信息
         m_bEmerStatus = true;
         //提示
-        strContent = QObject::tr("请在加样针停下后,将急诊样本放入%1号样本位,然后选择测试类型(可点击自动扫码或手动输入样本编码!)").arg(EMER_No);
+        strContent = QObject::tr("请在加样针停下后,将急诊样本放入%1号样本位,然后选择测试类型,点击扫描条码!").arg(EMER_No);
         QMessageBox::information(this,strTitle,strContent,QMessageBox::Ok);
         ui->pb_Test_InsertEmer->setText(QObject::tr("继续测试"));
     }else if(strBtName.compare( QObject::tr("继续测试")) == 0){
@@ -1740,13 +1693,13 @@ void TestInterface::on_pb_Test_InsertEmer_clicked()
             //提示
             strContent = QObject::tr("条码和测试类型不能为空");
             QMessageBox::information(this,strTitle,strContent,QMessageBox::Ok);
-            /*//取消急诊
+            //取消急诊
             m_bEmerStatus = false;
             //继续发送下一个测试类型，如果有
             QByteArray byarrTestInfo = PacketTestInfoToByarr(m_vecTestInfo);
             if(!byarrTestInfo.isEmpty()){
                 SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_START_SAMPLE,byarrTestInfo);
-            }*/
+            }
             return;
         }
 
@@ -1775,46 +1728,28 @@ void TestInterface::on_pb_Test_InsertEmer_clicked()
  *@Version:     1.0
  *@Date:        2018-6-16
 ********************************************************/
-void TestInterface::ParseScanBarCodeInfo(const QByteArray &ScanData, bool bEmer)
+void TestInterface::ParseScanBarCodeInfo(const QByteArray &ScanData)
 {
-    qDebug()<<ScanData.size();
-    if(ScanData.size() != 320 && ScanData.size() != 20){
+    if(ScanData.size() != 320){
         return;
     }
     ScanBarCodeInfo barcode;
-    Scan_Info_t singleBarcode;
-    if(bEmer){
-        memcpy(&singleBarcode, ScanData, ScanData.size());
-        //qDebug()<<sizeof(ScanBarCodeInfo);
-        QString strBarCode;
+    memcpy(&barcode, ScanData, ScanData.size());
+    //qDebug()<<sizeof(ScanBarCodeInfo);
+    QString strBarCode;
+    for(int n=0; n<SAMPLECOUNT; n++){
+        strBarCode.clear();
         //qDebug()<<barcode.scaninfo[n].Scan_State;
-        if(singleBarcode.Scan_State == 2){
+        if(barcode.scaninfo[n].Scan_State == 2){
             //strBarCode.clear();
             for(int i=0; i<BARCODELENGTH; i++){
-                strBarCode += singleBarcode.CODE[i];
+                strBarCode += barcode.scaninfo[n].CODE[i];
             }
         }
         //qDebug()<<strBarCode;
-        m_vecTestInfo[15].m_si.m_strSampleNo = strBarCode.trimmed();
-    }else{
-        memcpy(&barcode, ScanData, ScanData.size());
-        //qDebug()<<sizeof(ScanBarCodeInfo);
-        QString strBarCode;
-        for(int n=0; n<SAMPLECOUNT; n++){
-            strBarCode.clear();
-            //qDebug()<<barcode.scaninfo[n].Scan_State;
-            if(barcode.scaninfo[n].Scan_State == 2){
-                //strBarCode.clear();
-                for(int i=0; i<BARCODELENGTH; i++){
-                    strBarCode += barcode.scaninfo[n].CODE[i];
-                }
-            }
-            //qDebug()<<strBarCode;
-            m_vecTestInfo[n].m_si.m_strSampleNo = strBarCode.trimmed();
-        }
+        m_vecTestInfo[n].m_si.m_strSampleNo = strBarCode.trimmed();
     }
 }
-
 
 
 /********************************************************
@@ -1854,7 +1789,6 @@ bool TestInterface::ParseLoadSampleInfo(const QByteArray &SampleData, SampleInfo
         return false;
     }
     si.m_SamPos.m_nSamplePos = BytesToInt(SampleData.mid(0,4));
-    qDebug()<<"si.m_SamPos.m_nSamplePos:"<<si.m_SamPos.m_nSamplePos;
     si.m_SamPos.m_nReagentPos = BytesToInt(SampleData.mid(4,4));
 
     quint8 IDCardPos = BytesToInt(SampleData.mid(8,4));
@@ -1972,24 +1906,18 @@ void TestInterface::ProceStartLoadSample(const QByteArray &SampleData)
         m_nCompleteTestCount++;
         UpdateTestInfoBaseParam(m_nCompleteTestCount);
         //检测是否有项目在进行，如果没有，所有测试完成
-        //QVector<TestInfo>::iterator iter;
-        //for(iter = m_vecTestInfo.begin(); iter != m_vecTestInfo.end(); iter++){
-        bool bContinue = false;
-        for(int n = 0; n < m_vecTestInfo.size(); n++){
-            //qDebug()<<m_vecTestInfo[n].m_si.m_SamPos.m_nSamplePos<<m_vecTestInfo[n].m_timer->isActive()<<m_vecTestInfo[n].m_bIsTest;
-            if(  m_vecTestInfo[n].m_timer->isActive() || m_vecTestInfo[n].m_bIsTest ){
+        QVector<TestInfo>::iterator iter;
+        for(iter = m_vecTestInfo.begin(); iter != m_vecTestInfo.end(); iter++){
+            if( ( ((TestInfo*)(iter))->m_timer->isActive() ) ){
                 //如果有就返回
-                bContinue = true;
                 break;
+            }else{
+                //没有，测试完成
+                AllTestComplete();
             }
         }
-        //如果无继续项目,清空数据
-        if(!bContinue){
-            AllTestComplete();
-            return;
-        }
     }
-    //如果急诊状态开启，则不发送测试信息，直接发送急诊信息
+    //如果急诊状态开户，则不发送测试信息，直接发送急诊信息
     if(m_bEmerStatus == true){
         return;
     }
@@ -2015,20 +1943,11 @@ void TestInterface::PorceLoadSampleComplete(const QByteArray &AckData)
     //解析返回数据
     SamplePos sp;
     memcpy(&sp, AckData,AckData.size());
-    qDebug()<<"samplepos:"<<sp.m_nSamplePos<<sp.m_nReagentPos;
+    //qDebug()<<"samplepos:"<<sp.m_nSamplePos<<sp.m_nReagentPos;
     //发送开始测试信号
     QByteArray byarrData;
-    //样本位置
     byarrData.append(IntToBytes(sp.m_nSamplePos));
-    //试剂位置
     byarrData.append(IntToBytes(sp.m_nReagentPos));
-    //扫描起始点,36
-    QByteArray byarrIDCardData = m_mapIDCardInfo.value( QString::number( m_vecTestInfo.at(sp.m_nSamplePos).m_nIDCardIndex ) ).m_byarrIDCardData ;
-    qDebug()<<m_vecTestInfo.at(sp.m_nSamplePos).m_nIDCardIndex;
-    qDebug()<<byarrIDCardData.size();
-    byarrData.append(IntToBytes((quint8)byarrIDCardData.at(36)));
-    //放大倍数,22
-    byarrData.append(IntToBytes((quint8)byarrIDCardData.at(22)));
     SendSerialData(m_CheckPanelsSerial,PL_FUN_AM_START_TEST,byarrData);
 }
 

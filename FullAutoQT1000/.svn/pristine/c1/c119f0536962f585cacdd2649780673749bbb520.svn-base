@@ -110,8 +110,6 @@ struct TestInfo{
     quint16 m_nRemainTime;
     //数据结果
     QByteArray m_byarrData;
-    //ID卡位置
-    quint8 m_nIDCardIndex;
     //测试结果
     QString m_strResult;
     TestInfo(){
@@ -119,7 +117,6 @@ struct TestInfo{
         m_bIsTest  = false;
         m_bIsSend  = false;
         //m_bIsEmerg = false;
-        m_nIDCardIndex = 0;
         m_strItemName = "";
         m_strResult = "";
         m_byarrData.clear();

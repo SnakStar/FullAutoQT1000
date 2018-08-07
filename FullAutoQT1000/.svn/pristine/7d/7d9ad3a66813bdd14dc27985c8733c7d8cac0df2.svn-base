@@ -584,11 +584,11 @@ void ResultCalc::calculateResult(ResultDataInfo& datainfo,unsigned int *scanData
 
 QString ResultCalc::calculateResult2(ResultDataInfo& datainfo,unsigned int *scanData1,unsigned char *pRecord,unsigned char *pIdmessgae)
 {
-    /*QByteArray byteScan1;
+    QByteArray byteScan1;
     for(int n=0; n<260; n++){
         byteScan1.append((quint8)pIdmessgae[n]);
         qDebug()<<n<<"   "<<"1:"<<(quint8)byteScan1[n];
-    }*/
+    }
     //测试日志信息
     QString strTestLogInfo = "新ID卡测试信息: ";
     QString strTempLogInfo;
@@ -597,8 +597,7 @@ QString ResultCalc::calculateResult2(ResultDataInfo& datainfo,unsigned int *scan
     unsigned int p[4]={0,0,0,0};
     float value,value1,value2;
     unsigned int Threshold1,Threshold2;
-    unsigned int TempMaxPos1 = 0;
-    unsigned int TempMaxPos2 = 0;
+    int TempMaxPos1,TempMaxPos2;
     float maxresult,minresult;
     long  area1,area2;
     //long Threshold = 0;
@@ -699,13 +698,9 @@ QString ResultCalc::calculateResult2(ResultDataInfo& datainfo,unsigned int *scan
         Threshold1 =  (TempMax1 - Tempbase1)/2+Tempbase1;
         //Threshold2 =  (TempMax2 - Tempbase2)/2+Tempbase2;
 
-        int nMax1Index = 0;
+
         if(TempMaxPos1>150){
-            nMax1Index = TempMaxPos1 - TSignallength/2;
-            if( nMax1Index < 0 || nMax1Index>319){
-                nMax1Index = 80;
-            }
-            TempMax1 = scanData1[nMax1Index];
+            TempMax1 = scanData1[TempMaxPos1 - TSignallength/2];
             for(int n=TempMaxPos1 - TSignallength/2; n>0; n--){
             //for(int n=TempMaxPos1 - TSignallength/2; n>TempMaxPos1 - TSignallength/2 - CSignallength; n--){
                 if(n<0){
@@ -718,11 +713,7 @@ QString ResultCalc::calculateResult2(ResultDataInfo& datainfo,unsigned int *scan
             }
             MaxPosition[1] = TempMaxPos1;
         }else{
-            nMax1Index = TempMaxPos1 + CSignallength/2;
-            if(nMax1Index < 0 || nMax1Index > 319){
-                nMax1Index = 235;
-            }
-            TempMax1 = scanData1[nMax1Index];
+            TempMax1 = scanData1[TempMaxPos1 + CSignallength/2];
             for(int n=TempMaxPos1 + CSignallength/2; n<320; n++){
             //for(int n=TempMaxPos1 + CSignallength/2; n<TempMaxPos1+CSignallength/2+TSignallength; n++){
                 if(n>320){

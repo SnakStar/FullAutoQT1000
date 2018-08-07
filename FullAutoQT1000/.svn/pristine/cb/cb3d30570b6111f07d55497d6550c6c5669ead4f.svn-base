@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>4</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="GeneralSetPage">
     <widget class="QGroupBox" name="groupBox_Encode">
@@ -36,7 +36,7 @@
       </rect>
      </property>
      <property name="title">
-      <string>编码模式</string>
+      <string>Encode Mode</string>
      </property>
      <widget class="QRadioButton" name="rb_Set_AutoEncode">
       <property name="geometry">
@@ -48,7 +48,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>自动编码</string>
+       <string>Auto Encode</string>
       </property>
      </widget>
      <widget class="QRadioButton" name="rb_Set_ScanEncode">
@@ -61,7 +61,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>扫描编码</string>
+       <string>Scanning Encode</string>
       </property>
      </widget>
     </widget>
@@ -75,7 +75,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>保存</string>
+      <string>Save</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_Set_GenCancel">
@@ -88,7 +88,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>取消</string>
+      <string>Cancel</string>
      </property>
     </widget>
    </widget>
@@ -103,7 +103,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>修改</string>
+      <string>Modify</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_Set_RenfAdd">
@@ -116,7 +116,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>增加</string>
+      <string>Add</string>
      </property>
     </widget>
     <widget class="QTableWidget" name="tw_Set_RenfvInfo">
@@ -139,7 +139,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>删除</string>
+      <string>Delete</string>
      </property>
     </widget>
    </widget>
@@ -177,7 +177,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>保存</string>
+      <string>Save</string>
      </property>
     </widget>
    </widget>
@@ -192,7 +192,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>确定</string>
+      <string>OK</string>
      </property>
     </widget>
     <widget class="QDateEdit" name="de_Set_dteDateSet">
@@ -221,7 +221,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>时间设置</string>
+      <string>Time Setting</string>
      </property>
     </widget>
     <widget class="QTimeEdit" name="de_Set_dteTimeSet">
@@ -265,7 +265,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>硬件版本：</string>
+      <string>Firmware version：</string>
      </property>
     </widget>
     <widget class="QLabel" name="lb_Set_SoftTag">
@@ -278,7 +278,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>软件版本：</string>
+      <string>Software Version：</string>
      </property>
     </widget>
     <widget class="QLabel" name="lb_Set_SoftNum">
@@ -306,7 +306,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>登陆密码</string>
+      <string>Login Password</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="le_Set_DebugLoginPwd">
@@ -329,7 +329,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>确定</string>
+      <string>OK</string>
      </property>
     </widget>
    </widget>
