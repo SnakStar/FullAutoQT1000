@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>debugIntefaceDlg</class>
+ <widget class="QDialog" name="debugIntefaceDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1022</width>
+    <height>766</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QListWidget" name="lw_debug_Navigate">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>191</width>
+     <height>751</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>205</x>
+     <y>14</y>
+     <width>811</width>
+     <height>741</height>
+    </rect>
+   </property>
+   <widget class="QWidget" name="NormalDebugPage"/>
+   <widget class="QWidget" name="ParamDebugPage"/>
+   <widget class="QWidget" name="DbaseDebugPage"/>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
