@@ -73,6 +73,8 @@ void LoginDlg::on_pb_Login_Poweroff_clicked()
     if(QMessageBox::Yes == QMessageBox::warning(this,strTitle,strContent,QMessageBox::Yes|QMessageBox::No)){
 #ifdef Q_OS_WIN32
         qApp->closeAllWindows();
+#elif Q_OS_LINUX
+        system("shutdown -h now");
 #elif __arm__
         system("shutdown -h now");
 #endif
