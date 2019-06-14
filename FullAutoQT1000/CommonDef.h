@@ -66,6 +66,15 @@
 #define PL_FUN_AM_ID_DEBUG_PLUNGERPUMP          0x002B
 //柱塞泵参数设置完成
 #define PL_FUN_AM_ID_DEBUG_PLUNGERPUMP_COMPLETE 0x002C
+//调试硬件参数保存
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_SAVE        0x002D
+//调试硬件参数取消保存
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_CANCEL      0x002E
+//调试硬件参数开始
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_START       0x002F
+//调试硬件参数结束
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_END         0x0030
+
 
 
 //备用

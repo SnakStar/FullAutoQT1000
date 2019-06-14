@@ -57,13 +57,16 @@ TestInterface::TestInterface(QWidget *parent) :
     InitValidTestItem();
     //初始化检测板串口
     bool bRel = false;
-    bRel = InitCheckPanelsSerial();
+    bRel = (static_cast<MainWindow*>(m_pMainWnd))->InitCheckPanelsSerial();
+    //bRel = InitCheckPanelsSerial();
     if(bRel){
-        connect(&m_CheckPanelsSerial,SIGNAL(readyRead()), this, SLOT(RecvCheckPanelsData()) );
+        m_CheckPanelsSerial = (static_cast<MainWindow*>(m_pMainWnd))->GetCheckPanelsSerial() ;
+        connect(m_CheckPanelsSerial,SIGNAL(readyRead()), this, SLOT(RecvCheckPanelsData()) );
         //初始化控制板串口
-        bRel = InitControlPanelsSerial();
+        bRel = (static_cast<MainWindow*>(m_pMainWnd))->InitControlPanelsSerial();
         if(bRel){
-            connect(&m_ControlPanelsSerial,SIGNAL(readyRead()), this, SLOT(RecvControlPanelsData()) );
+            m_ControlPanelsSerial = (static_cast<MainWindow*>(m_pMainWnd))->GetControlPanelsSerial();
+            connect(m_ControlPanelsSerial,SIGNAL(readyRead()), this, SLOT(RecvControlPanelsData()) );
             //查询测试板初始化情况
             connect(&m_TimerTestCheck, SIGNAL(timeout()), this, SLOT(TestCheckFunc()) );
             m_TimerTestCheck.start(1000);
@@ -120,7 +123,7 @@ bool TestInterface::eventFilter(QObject *obj, QEvent *e){
 
 void TestInterface::SimulationIDCardCast(){
     //测试用数据卡
-    QString strIDCard="313031303130303030303031303120202020202000B408013131313131313131120B085A0001010100110601F43068734352502020202020202020202020202020206E672F6D4C2020202020025A00000100640000000200002F052B00001101122D000000001A2B00000000002B00000000002B0000000000000225052B000035014D2D000001005E2B00000000002B00000000002B000000000000045A052B00000C00172B00000000212B00000000002B00000000002B000000000000115B052B00001C00012D00000100482B00000000002B00000000002B0000000000020325052B00002503422D000006000C2B00000000002B00000000002B0000000000FFFFFF";
+    QString strIDCard="3130313031313130303030303031202020202020003C0600303138313130303414061E641405010001190A1400C8687343525020202020202020202020202020202075672F4C202020202020016400003200C80000113F062F42052B00000309322D000000043A2B00000000002B00000000002B00000000000D121A052B000004313D2D0000091B0D2B00000000002B00000000002B0000000000145313052B00000635412D00002311002B00000000002B00000000002B00000000001B3B51052B00000B443C2D00008E335A2B00000000002B00000000002B0000000000000000002B00000000002B00000000002B00000000002B00000000002B0000000000FFFFFF";
     IDCardInfo ii;
     ii.m_byarrIDCardData = StrToBytes(strIDCard);
     ii.m_strTestItem = ii.m_byarrIDCardData.mid(46,20).trimmed();
@@ -130,7 +133,6 @@ void TestInterface::SimulationIDCardCast(){
     m_mapTestItemPos[ii.m_strTestItem] = "0";
 
     UpdateIDCardInfo(0,20,ii.m_strTestItem);
-
 
     IDCardInfo ii2 = ii;
     ii2.m_strTestItem = "BMP";
@@ -149,12 +151,12 @@ void TestInterface::SimulationIDCardCast(){
 
     UpdateIDCardInfo(2,20,ii3.m_strTestItem);
     //
-    IDCardInfo ii4 = ii;
+    /*IDCardInfo ii4 = ii;
     ii3.m_strTestItem = "hsCRP";
     m_mapIDCardInfo["3"] = ii4;
     m_mapTestItemPos[ii.m_strTestItem] = "3";
 
-    UpdateIDCardInfo(3,20,ii4.m_strTestItem);
+    UpdateIDCardInfo(3,20,ii4.m_strTestItem);*/
 }
 
 /********************************************************
@@ -180,32 +182,6 @@ QByteArray TestInterface::StrToBytes(QString str)
     return byarrData;
 }
 
-
-/*
- *
- *初始化检测板串口
- */
-/////////////////////////////////////////////////////////
-bool TestInterface::InitCheckPanelsSerial()
-{
-    //串口初始化
-    m_CheckPanelsSerial.setBaudRate(BAUD19200);
-#ifdef Q_OS_WIN32
-    #ifndef SERIALDEBUG
-        m_CheckPanelsSerial.setPortName("\\\\.\\com9");
-    //m_CheckPanelsSerial.setTimeout(1000);
-    #else
-        m_CheckPanelsSerial.setPortName("\\\\.\\com1");
-    #endif
-#else
-    m_CheckPanelsSerial.setPortName("/dev/ttyO1");
-#endif
-    bool bOpen = m_CheckPanelsSerial.open(QIODevice::ReadWrite);
-    if(!bOpen){
-        qDebug()<<"CheckPanels Serial open the fail";
-    }
-    return bOpen;
-}
 
 /********************************************************
  *@Name:        ParseSerialData
@@ -381,6 +357,7 @@ QByteArray TestInterface::PackageTestDataToSerial(RawTestInfo TestInfo,QByteArra
     byteContent.append((quint8)(TestInfo.m_nTest1Ratio/65536) );
     byteContent.append((quint8)(TestInfo.m_nTest1Ratio/256) );
     byteContent.append((quint8)(TestInfo.m_nTest1Ratio%256) );
+    //byteContent.append(ValueToHex(QString::number(TestInfo.m_nTest1Ratio),4,2));
     //面积1
     byteContent.append( static_cast<char>(0) );
     byteContent.append( static_cast<char>(0) );
@@ -1081,9 +1058,9 @@ QString TestInterface::CalcResult(RawTestInfo &TestInfoObj, QByteArray byarrResu
     //判断计算方案
     int nCalcNum = cIDMessage[23];
     if(m_bDebugMode == true){
-        QString strCalcMethod = m_settins->GetParam(CALCMETHOD);
+        QString strCalcMethod = m_settins->GetParam(DEBUGCALCMETHOD);
         if(!strCalcMethod.isEmpty()){
-            nCalcNum = m_settins->GetParam(CALCMETHOD).toInt();
+            nCalcNum = m_settins->GetParam(DEBUGCALCMETHOD).toInt();
         }
     }
     TestInfoObj.m_nComputeMothed = nCalcNum;
@@ -1351,7 +1328,7 @@ bool TestInterface::GetIDCardPosData(QString strIDCardIndex, QByteArray &byarrDa
 void TestInterface::RecvCheckPanelsData()
 {
     //qDebug()<<m_DeviceSerial.readAll().toHex();
-    QByteArray byarrData = m_CheckPanelsSerial.readAll();
+    QByteArray byarrData = m_CheckPanelsSerial->readAll();
     //qDebug()<<byarrData.right(4).toHex().toUInt(0,16);
     m_byarrCheckData.append(byarrData);
     //检测是否为完整一帧数据
@@ -1459,41 +1436,14 @@ void TestInterface::RecvCheckPanelsData()
 
 }
 
-/*
- *
- *初始化控制板串口
- */
-bool TestInterface::InitControlPanelsSerial()
-{
-    //串口初始化
-    m_ControlPanelsSerial.setBaudRate(BAUD19200);
-#ifdef Q_OS_WIN32
-    #ifndef SERIALDEBUG
-        m_ControlPanelsSerial.setPortName("\\\\.\\com10");
-    #else
-        m_ControlPanelsSerial.setPortName("\\\\.\\com3");
-    #endif
-    //m_ControlPanelsSerial.setTimeout(1000);
-#else
-    m_ControlPanelsSerial.setPortName("/dev/ttyO4");
-#endif
-    bool bOpen = m_ControlPanelsSerial.open(QIODevice::ReadWrite);
-    if(!bOpen){
-        qDebug()<<"ControlPanels Serial open the fail";
-    }
-    return bOpen;
-}
-
-
-
 void TestInterface::RecvControlPanelsData()
 {
     //qDebug()<<m_DeviceSerial.readAll().toHex();
-    QByteArray byarrData = m_ControlPanelsSerial.readAll();
+    QByteArray byarrData = m_ControlPanelsSerial->readAll();
     //qDebug()<<byarrData.right(4).toHex().toUInt(0,16);
     m_byarrControlData.append(byarrData);
     //检测是否为完整一帧数据
-    //qDebug()<<"RecvControlPanelsData:"<<m_byarrControlData.toHex().toUpper();
+    qDebug()<<"RecvControlPanelsData:"<<m_byarrControlData.toHex().toUpper();
     if(!ParseSerialData(m_byarrControlData)){
         return;
     }
@@ -1564,6 +1514,10 @@ void TestInterface::RecvControlPanelsData()
                 //qDebug()<<CurrData.m_Data.size();
                 ParseScanBarCodeInfo(CurrData.m_Data,true);
                 ShowBarCodeInfo(m_listSampleInfo);
+                break;
+            case PL_FUN_AM_ID_DEBUG_LOADINGARMRCEV:
+                emit sendDebugHardwareData(CurrData.m_Data);
+                qDebug()<<"start send emit sendDebugHardwareData";
                 break;
             default:
                 qDebug()<<"command is invalid!";
@@ -1891,13 +1845,25 @@ void TestInterface::PacketTestInfoToQueue(QList<SampleObj> &listSampleInfo){
                 byarrTestInfo.append(IntToBytes(nIDCardIndex));
                 //样本量大小
                 quint16 nSampleSize = 0;
-                nSampleSize = static_cast<quint16>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(42) );
+                //样本量血清大小
+                quint16 nSampleSerumSize = 0;
+                nSampleSerumSize = static_cast<quint16>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(42) );
+                //样本量全血大小
+                quint16 nSampleBloodSize = 0;
+                nSampleBloodSize = static_cast<quint16>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(43) );
+                //查找配置文件使用的是哪个样本类型
+                int nType = m_settins->GetParam(BLOODTYPE).toInt();
+                if(nType == 0){
+                    nSampleSize = nSampleSerumSize;
+                }else{
+                    nSampleSize = nSampleBloodSize;
+                }
                 //缓冲液大小
                 quint16 nBufferSize = 0;
                 quint8 nBufHight = 0;
                 quint8 nBufLow = 0;
-                nBufHight = static_cast<quint8>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(43) );
-                nBufLow = static_cast<quint8>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(44) );
+                nBufHight = static_cast<quint8>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(44) );
+                nBufLow = static_cast<quint8>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(45) );
                 nBufferSize = nBufHight * 256 + nBufLow;
                 if(m_bDebugMode == true){
                     QString strSampleSize = m_settins->GetParam(SAMPLESIZE);
@@ -2619,7 +2585,7 @@ quint32 TestInterface::GetCheckSum(QByteArray byarrDataLength, QByteArray byarrD
  *@Version:     1.0
  *@Date:        2018-5-22
 ********************************************************/
-QByteArray TestInterface::IntToBytes(quint32 nValue, quint8 nCount)
+QByteArray TestInterface::IntToBytes(qint32 nValue, quint8 nCount)
 {
     QByteArray byarrCheckSum;
     //高位在前,低位在后
@@ -2694,7 +2660,7 @@ void TestInterface::InitVectorTestInfo()
  *@Version:     1.0
  *@Date:        2018-6-16
 ********************************************************/
-void TestInterface::SendSerialData(QextSerialPort& ser, quint16 nFuncIndex,QByteArray arrData)
+void TestInterface::SendSerialData(QextSerialPort *ser, quint16 nFuncIndex,QByteArray arrData)
 {
     QByteArray byarrMsg;
     MsgData msgd;
@@ -2715,7 +2681,7 @@ void TestInterface::SendSerialData(QextSerialPort& ser, quint16 nFuncIndex,QByte
     byarrMsg.append(IntToBytes(GetCheckSum(IntToBytes(msgd.m_DataLength),msgd.m_Data)));
     //qDebug()<<GetCheckSum(IntToBytes(msgd.m_DataLength),msgd.m_Data);
     byarrMsg.append(IntToBytes(msgd.m_frameEnd));
-    ser.write(byarrMsg);
+    ser->write(byarrMsg);
     qDebug()<<"Send-Data-Full:"<<byarrMsg.toHex().toUpper();
 }
 
@@ -3290,7 +3256,7 @@ void TestInterface::ProceStartLoadSample(const QByteArray &SampleData)
         nRemainTime = nRemainTimeHigh * 256 + nRemainTimeLow;
         //对应试剂位置开始计时
         if(m_bDebugMode == true){
-            int nTempTime = m_settins->GetParam(TESTTIME).toInt();
+            int nTempTime = m_settins->GetParam(DEBUGTESTTIME).toInt();
             if(nTempTime > 0){
                 nRemainTime = nTempTime;
             }
@@ -3422,11 +3388,11 @@ void TestInterface::PorceLoadSampleComplete(const QByteArray &AckData)
                 //放大倍数,22
                 quint8 nAmpParam = static_cast<quint8>(byarrIDCardData.at(22));
                 if(m_bDebugMode == true){
-                    int nDebugScanStart = m_settins->GetParam(SCANSTART).toInt();
+                    int nDebugScanStart = m_settins->GetParam(DEBUGSCANSTART).toInt();
                     if(nDebugScanStart > 0){
                         nScanPoint = static_cast<quint8>(nDebugScanStart);
                     }
-                    int nDebugAmpParam = m_settins->GetParam(AMPPARAM).toInt();
+                    int nDebugAmpParam = m_settins->GetParam(DEBUGAMPPARAM).toInt();
                     if(nDebugAmpParam > 0){
                         nAmpParam = static_cast<quint8>(nDebugAmpParam);
                     }

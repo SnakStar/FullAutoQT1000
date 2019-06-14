@@ -91,6 +91,45 @@
       <string>取消</string>
      </property>
     </widget>
+    <widget class="QGroupBox" name="groupBox_BloodType">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>100</y>
+       <width>781</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>样本类型</string>
+     </property>
+     <widget class="QRadioButton" name="rb_Set_GeneralSerum">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>40</y>
+        <width>161</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>血清</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rb_Set_GeneralBlood">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>40</y>
+        <width>161</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>全血</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QWidget" name="RenfSetPage">
     <widget class="QPushButton" name="btn_Set_RenfModify">
@@ -342,7 +381,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>V1.0.20.1</string>
+      <string>V1.0.21.1</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_Set_Poweroff">

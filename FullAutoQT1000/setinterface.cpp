@@ -15,11 +15,11 @@ SetInterface::SetInterface(QWidget *parent) :
     //初始化时间控件
     InitSysTimeCon();
     //获取配置文件对象
-    m_pSettinsObj = ( (MainWindow* )m_pMainWnd)->GetSettingsObj();
+    m_pSettinsObj = (static_cast<MainWindow*>(m_pMainWnd))->GetSettingsObj();
     //获取测试界面对象
-    m_pTestInterface = ( (MainWindow* )m_pMainWnd)->GetTestInterface();
+    m_pTestInterface = (static_cast<MainWindow*>(m_pMainWnd))->GetTestInterface();
     //获取数据库对象
-    m_devDB = ( (MainWindow* )m_pMainWnd)->GetDatabaseObj();
+    m_devDB = (static_cast<MainWindow*>(m_pMainWnd))->GetDatabaseObj();
     //m_pTestInterface->m_mapTestItemPos.key("4","");
     //获取配置参数内容
     //m_SetParam = m_pSettinsObj->ReadSettingsInfoToMap();
@@ -141,6 +141,11 @@ void SetInterface::UpdateUIControl()
     }else{
         ui->rb_Set_AutoEncode->setChecked(true);
     }
+    if(m_pSettinsObj->GetParam(BLOODTYPE).toInt() == 1 ){
+        ui->rb_Set_GeneralBlood->setChecked(true);
+    }else{
+        ui->rb_Set_GeneralSerum->setChecked(true);
+    }
 }
 
 /********************************************************
@@ -224,7 +229,12 @@ void SetInterface::on_btn_Set_GenSave_clicked()
     }else{
         m_pSettinsObj->SetParam(SCANMODE,"1");
     }
-    //
+    //血样类型
+    if(ui->rb_Set_GeneralSerum->isChecked()){
+        m_pSettinsObj->SetParam(BLOODTYPE,"0");
+    }else{
+        m_pSettinsObj->SetParam(BLOODTYPE,"1");
+    }
     //写入配置文件
     m_pSettinsObj->SaveAllSettingsInfoToFile();
     //
@@ -263,6 +273,26 @@ void SetInterface::on_rb_Set_AutoEncode_clicked()
 void SetInterface::on_rb_Set_ScanEncode_clicked()
 {
     m_pSettinsObj->SetParam(SCANMODE,"1");
+}
+
+/*
+ *
+ * 常规界面-血清类型单选控件
+ *
+ */
+void SetInterface::on_rb_Set_GeneralSerum_clicked()
+{
+    m_pSettinsObj->SetParam(BLOODTYPE,"0");
+}
+
+/*
+ *
+ * 常规界面-全血类型单选控件
+ *
+ */
+void SetInterface::on_rb_Set_GeneralBlood_clicked()
+{
+    m_pSettinsObj->SetParam(BLOODTYPE,"1");
 }
 
 /*
@@ -633,7 +663,8 @@ void SetInterface::on_btn_Set_DebugOk_clicked()
     if(re == true){
         //qDebug()<<strPw;
         ui->le_Set_DebugLoginPwd->clear();
-        debugIntefaceDlg* di = new debugIntefaceDlg(m_devDB,m_pSettinsObj);
+        QextSerialPort* serial = static_cast<MainWindow*>(m_pMainWnd)->GetControlPanelsSerial();
+        debugIntefaceDlg* di = new debugIntefaceDlg(m_devDB,m_pSettinsObj,serial,m_pTestInterface);
         di->show();
     }else{
         QMessageBox::warning(this,"提示","密码输入错误",QMessageBox::Ok);
@@ -732,6 +763,8 @@ void SetInterface::on_btn_Set_UserDelete_clicked()
         }
     }
 }
+
+
 
 
 

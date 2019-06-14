@@ -41,6 +41,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    //初始化检测板串口
+    bool InitCheckPanelsSerial();
+    //初始化控制板串口
+    bool InitControlPanelsSerial();
     //获取数据库对象
     CQtProDB* GetDatabaseObj();
     //获取配置文件对象
@@ -51,6 +55,10 @@ public:
     QextSerialPort* GetPrintSerialPort();
     //获取hl7对象
     QextSerialPort *GetHL7SerialPort();
+    //获取检测板串口对象
+    QextSerialPort *GetCheckPanelsSerial();
+    //获取控制板串口对象
+    QextSerialPort *GetControlPanelsSerial();
     //获取输入法对象
     //MyInputPanelContext* GetInputPanelContext();
 private slots:
@@ -77,7 +85,6 @@ private:
     //初始化hl7串口
     bool InitHl7Serial();
 
-
 public:
     //获取界面对象
     TestInterface* GetTestInterface();
@@ -102,6 +109,10 @@ private:
     QextSerialPort m_SerialPrint;
     //hl7串口对象
     QextSerialPort m_SerialHL7;
+    //检测板串口对象
+    QextSerialPort m_CheckPanelsSerial;
+    //控制板串口对象
+    QextSerialPort m_ControlPanelsSerial;
     //输入法对象
     //MyInputPanelContext* m_myInputPanel;
     //

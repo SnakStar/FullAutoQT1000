@@ -1,4 +1,4 @@
-#ifndef RESULTSTRUCTDEF_H
+﻿#ifndef RESULTSTRUCTDEF_H
 #define RESULTSTRUCTDEF_H
 
 

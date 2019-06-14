@@ -71,6 +71,10 @@ private slots:
 
     void on_btn_Set_UserDelete_clicked();
 
+    void on_rb_Set_GeneralSerum_clicked();
+
+    void on_rb_Set_GeneralBlood_clicked();
+
 private:
     Ui::SetInterface *ui;
 

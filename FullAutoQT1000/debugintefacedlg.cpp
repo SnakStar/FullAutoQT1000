@@ -1,13 +1,15 @@
 ﻿#include "debugintefacedlg.h"
 #include "ui_debugintefacedlg.h"
 
-debugIntefaceDlg::debugIntefaceDlg(CQtProDB* db, CUtilSettings *settings, QWidget *parent) :
+debugIntefaceDlg::debugIntefaceDlg(CQtProDB* db, CUtilSettings *settings,QextSerialPort* ControlSerial,TestInterface* ti, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::debugIntefaceDlg)
 {
     ui->setupUi(this);
     m_devDb = db;
     m_pSettinsObj = settings;
+    m_pControlPanelsSerial = ControlSerial;
+    m_pTestInterface = ti;
     //初始化对话框样式
     InitDialogStyle();
     //初始化导航栏
@@ -19,13 +21,21 @@ debugIntefaceDlg::debugIntefaceDlg(CQtProDB* db, CUtilSettings *settings, QWidge
     InitDebugControl();
     //初始化参数设置界面内容值
     InitParamSetShow();
-
+    //初始化硬件界面输入法模式
+    InitHardwareInputMode();
+    //测试界面接收到的硬件调试参数
+    connect(m_pTestInterface,SIGNAL(sendDebugHardwareData(QByteArray)),this,SLOT(RecvDebugHardwareData(QByteArray)) );
+    //调试硬件参数开始
+    QByteArray byarrData;
+    m_pTestInterface->SendSerialData(m_pControlPanelsSerial,PL_FUN_AM_ID_DEBUG_HARDWARE_START,byarrData);
 }
 
 debugIntefaceDlg::~debugIntefaceDlg()
 {
     delete ui;
 }
+
+
 
 /********************************************************
  *@Name:        InitNavigate
@@ -61,6 +71,44 @@ void debugIntefaceDlg::InitDialogStyle()
     this->setWindowFlags(Qt::CustomizeWindowHint|Qt::FramelessWindowHint);
     QDesktopWidget* dw = qApp->desktop();
     this->move( (dw->width() - this->width())/2 , (dw->height() - this->height())/2);
+}
+
+/********************************************************
+ *@Name:        InitHardwareInputMode
+ *@Author:      HuaT
+ *@Description: 初始化硬件调试界面输入法模式
+ *@Param1:      无
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2019-3-4
+********************************************************/
+void debugIntefaceDlg::InitHardwareInputMode()
+{
+    ui->le_HardParam_BufferDepth->setProperty("flag","number");
+    ui->le_HardParam_BufferOffset->setProperty("flag","number");
+    ui->le_HardParam_BufferX->setProperty("flag","number");
+    ui->le_HardParam_BufferY->setProperty("flag","number");
+    ui->le_HardParam_ClearoutX->setProperty("flag","number");
+    ui->le_HardParam_ClearoutY->setProperty("flag","number");
+    ui->le_HardParam_DialPos->setProperty("flag","number");
+    ui->le_HardParam_DialOffset->setProperty("flag","number");
+    ui->le_HardParam_DialInitStep->setProperty("flag","number");
+    ui->le_HardParam_MixingDepth->setProperty("flag","number");
+    ui->le_HardParam_MixingX->setProperty("flag","number");
+    ui->le_HardParam_MixingY->setProperty("flag","number");
+    ui->le_HardParam_PlungerPumpSize->setProperty("flag","number");
+    ui->le_HardParam_PlungerPumpNumber->setProperty("flag","number");
+    ui->le_HardParam_PumpNumber->setProperty("flag","number");
+    ui->le_HardParam_PushMaxLen->setProperty("flag","number");
+    ui->le_HardParam_PushNumber->setProperty("flag","number");
+    ui->le_HardParam_SampleAddX->setProperty("flag","number");
+    ui->le_HardParam_SampleAddY->setProperty("flag","number");
+    ui->le_HardParam_SuctionDepth->setProperty("flag","number");
+    ui->le_HardParam_SuctionOffset->setProperty("flag","number");
+    ui->le_HardParam_SuctionX->setProperty("flag","number");
+    ui->le_HardParam_SuctionY->setProperty("flag","number");
+    ui->le_HardParam_CancelCardMaxLen->setProperty("flag","number");
+    ui->le_HardParam_SolenoidNumber->setProperty("flag","number");
 }
 
 /********************************************************
@@ -137,13 +185,13 @@ void debugIntefaceDlg::InitParamSetShow()
         ui->rb_Param_PCConnOpen->setChecked(true);
     }
     //调试参数
-    QString strAmp = m_pSettinsObj->GetParam(AMPPARAM);
+    QString strAmp = m_pSettinsObj->GetParam(DEBUGAMPPARAM);
     ui->le_Param_Amp->setText(strAmp);
-    ui->le_Param_CalcMethod->setText(m_pSettinsObj->GetParam(CALCMETHOD));
+    ui->le_Param_CalcMethod->setText(m_pSettinsObj->GetParam(DEBUGCALCMETHOD));
     ui->le_Param_Diluent->setText(m_pSettinsObj->GetParam(DILUENT));
     ui->le_Param_SampleSize->setText(m_pSettinsObj->GetParam(SAMPLESIZE));
-    ui->le_Param_ScanStart->setText(m_pSettinsObj->GetParam(SCANSTART));
-    ui->le_Param_TestTime->setText(m_pSettinsObj->GetParam(TESTTIME));
+    ui->le_Param_ScanStart->setText(m_pSettinsObj->GetParam(DEBUGSCANSTART));
+    ui->le_Param_TestTime->setText(m_pSettinsObj->GetParam(DEBUGTESTTIME));
     //仪器参数
     ui->le_Normal_SampleAddCoeffOffset->setText(m_pSettinsObj->GetParam(SAMPLEOFFSETCOEFF));
     ui->le_Normal_SampleAddConst->setText(m_pSettinsObj->GetParam(SAMPLEOFFSETCONST));
@@ -160,6 +208,9 @@ void debugIntefaceDlg::InitParamSetShow()
 void debugIntefaceDlg::on_lw_debug_Navigate_currentRowChanged(int currentRow)
 {
     if(currentRow == 5){
+        //调试硬件参数结束
+        QByteArray byarrData;
+        m_pTestInterface->SendSerialData(m_pControlPanelsSerial,PL_FUN_AM_ID_DEBUG_HARDWARE_END,byarrData);
         this->close();
     }else{
         ui->stackedWidget->setCurrentIndex(currentRow);
@@ -383,10 +434,10 @@ void debugIntefaceDlg::on_pb_Param_SaveParam_clicked()
 
     m_pSettinsObj->SetParam(DILUENT,ui->le_Param_Diluent->text());
     m_pSettinsObj->SetParam(SAMPLESIZE,ui->le_Param_SampleSize->text());
-    m_pSettinsObj->SetParam(SCANSTART,ui->le_Param_ScanStart->text());
-    m_pSettinsObj->SetParam(CALCMETHOD,ui->le_Param_CalcMethod->text());
-    m_pSettinsObj->SetParam(AMPPARAM,ui->le_Param_Amp->text());
-    m_pSettinsObj->SetParam(TESTTIME,ui->le_Param_TestTime->text());
+    m_pSettinsObj->SetParam(DEBUGSCANSTART,ui->le_Param_ScanStart->text());
+    m_pSettinsObj->SetParam(DEBUGCALCMETHOD,ui->le_Param_CalcMethod->text());
+    m_pSettinsObj->SetParam(DEBUGAMPPARAM,ui->le_Param_Amp->text());
+    m_pSettinsObj->SetParam(DEBUGTESTTIME,ui->le_Param_TestTime->text());
 
     m_pSettinsObj->SaveAllSettingsInfoToFile();
     QMessageBox::information(this,"提示","保存成功",QMessageBox::Ok);
@@ -405,3 +456,789 @@ void debugIntefaceDlg::on_pb_Normal_SaveParam_clicked()
     m_pSettinsObj->SaveAllSettingsInfoToFile();
     QMessageBox::information(this,"提示","保存成功",QMessageBox::Ok);
 }
+
+
+void debugIntefaceDlg::RecvDebugHardwareData(QByteArray byData)
+{
+    qDebug()<<"RecvDebugHardwareData:   start  recv data";
+    if(byData.size() == 0){
+        qDebug()<<"get debug hardware Data is zero";
+        return;
+    }
+    quint32 nOptionType = m_pTestInterface->BytesToInt(byData.mid(0,4));
+    quint32 nPosType = m_pTestInterface->BytesToInt(byData.mid(4,4));;
+    quint32 nMoveSize = m_pTestInterface->BytesToInt(byData.mid(8,4));;
+    switch (nOptionType) {
+    //加样位
+    case 0:
+        if(nPosType == 0){
+            ui->le_HardParam_SampleAddX->setText(QString::number(nMoveSize));
+        }else if(nPosType == 1){
+            ui->le_HardParam_SampleAddY->setText(QString::number(nMoveSize));
+        }
+        break;
+    //清洗位
+    case 1:
+        if(nPosType == 0){
+            ui->le_HardParam_ClearoutX->setText(QString::number(nMoveSize));
+        }else if(nPosType == 1){
+            ui->le_HardParam_ClearoutY->setText(QString::number(nMoveSize));
+        }
+        break;
+    //混匀位
+    case 2:
+        if(nPosType == 0){
+            ui->le_HardParam_MixingX->setText(QString::number(nMoveSize));
+        }else if(nPosType == 1){
+            ui->le_HardParam_MixingY->setText(QString::number(nMoveSize));
+        }else if(nPosType == 2){
+            ui->le_HardParam_MixingDepth->setText(QString::number(nMoveSize));
+        }
+        break;
+    //缓冲液位
+    case 3:
+        if(nPosType == 0){
+            ui->le_HardParam_BufferX->setText(QString::number(nMoveSize));
+        }else if(nPosType == 1){
+            ui->le_HardParam_BufferY->setText(QString::number(nMoveSize));
+        }else if(nPosType == 2){
+            ui->le_HardParam_BufferDepth->setText(QString::number(nMoveSize));
+        }else if(nPosType == 3){
+            ui->le_HardParam_BufferOffset->setText(QString::number(nMoveSize));
+        }
+        break;
+    //吸样位
+    case 4:
+        if(nPosType == 0){
+            ui->le_HardParam_SuctionX->setText(QString::number(nMoveSize));
+        }else if(nPosType == 1){
+            ui->le_HardParam_SuctionY->setText(QString::number(nMoveSize));
+        }else if(nPosType == 2){
+            ui->le_HardParam_SuctionDepth->setText(QString::number(nMoveSize));
+        }else if(nPosType == 3){
+            ui->le_HardParam_SuctionOffset->setText(QString::number(nMoveSize));
+        }
+        break;
+    case 5:
+        if(nPosType == 0){
+            ui->le_HardParam_CurrentPosX->setText(QString::number(nMoveSize));
+        }else if(nPosType == 1){
+            ui->le_HardParam_CurrentPosY->setText(QString::number(nMoveSize));
+        }
+        break;
+    default:
+        qDebug()<<"debug hardware Data - nOptionType error";
+        break;
+    }
+}
+
+/********************************************************
+ *@Name:        HardwareDebugLoadingArmCommand
+ *@Author:      HuaT
+ *@Description: 硬件调试加样臂命令
+ *@Param1:      操作类型,0:加样位，1：清洗位，2：混匀位，3：缓冲液位，4：吸样位
+ *@Param2:      位置类型,0:横向，1，纵向，2：液位探测，3偏移量
+ *@Param3:      移动距离
+ *@Param4:      数据类型，0：写入，1：请求
+ *@Return:      无
+ *@Version:     1.0
+ *@Date:        2019-3-4
+********************************************************/
+void debugIntefaceDlg::HardwareDebugLoadingArmCommand(qint32 OptionType, qint32 PosType, qint32 MoveSize, qint32 DataType)
+{
+    QByteArray byarrData;
+    byarrData.append(m_pTestInterface->IntToBytes(OptionType));
+    byarrData.append(m_pTestInterface->IntToBytes(PosType));
+    byarrData.append(m_pTestInterface->IntToBytes(MoveSize));
+    byarrData.append(m_pTestInterface->IntToBytes(DataType));
+    m_pTestInterface->SendSerialData(m_pControlPanelsSerial,PL_FUN_AM_ID_DEBUG_LOADINGARMSET,byarrData);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-加样位-横向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SampleAddXWrite_clicked()
+{
+    //操作类型-加样位
+    int nOptionType = 0;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_SampleAddX->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMSAMPLEAddX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-加样位-纵向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SampleAddYWrite_clicked()
+{
+    //操作类型-加样位
+    int nOptionType = 0;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_SampleAddY->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMSAMPLEAddY,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-加样位-横向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SampleAddXRead_clicked()
+{
+    //操作类型-加样位
+    int nOptionType = 0;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-加样位-纵向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SampleAddYRead_clicked()
+{
+    //操作类型-加样位
+    int nOptionType = 0;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-混匀位-横向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_MixingXWrite_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 2;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_MixingX->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-混匀位-纵向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_MixingYWrite_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 2;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_MixingY->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGY,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-混匀位-触液深度写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_MixingDepthWrite_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 2;
+    //位置类型
+    int nPosType = 2;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_MixingDepth->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGDEPTH,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-混匀位-横向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_MixingXRead_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 2;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+
+/*
+ *
+ *硬件调试界面-加样臂-混匀位-纵向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_MixingYRead_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 2;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-混匀位-触液深度读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_MixingDepthRead_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 2;
+    //位置类型
+    int nPosType = 2;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-清洗位-横向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_ClearoutXWrite_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 1;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_ClearoutX->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-清洗位-纵向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_ClearoutYWrite_clicked()
+{
+    //操作类型-混匀位
+    int nOptionType = 1;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_ClearoutY->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-清洗位-横向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_ClearoutXRead_clicked()
+{
+    //操作类型-清洗位
+    int nOptionType = 1;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-清洗位-纵向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_ClearoutYRead_clicked()
+{
+    //操作类型-清洗位
+    int nOptionType = 1;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-横向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferXWrite_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_BufferX->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-纵向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferYWrite_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_BufferY->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-触液深度向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferDepthWrite_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 2;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_BufferDepth->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-偏移量写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferOffsetWrite_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 3;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_BufferOffset->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-横向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferXRead_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-纵向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferYRead_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-触液深度读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferDepthRead_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 2;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-缓冲液位-偏移量读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_BufferOffsetRead_clicked()
+{
+    //操作类型-缓冲液位
+    int nOptionType = 3;
+    //位置类型
+    int nPosType = 3;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-横向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionXWrite_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_SuctionX->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-纵向写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionYWrite_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_SuctionY->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-触液深度写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionDepthWrite_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 2;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_SuctionDepth->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-偏移量写入
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionOffsetWrite_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 3;
+    //移动距离
+    int nMoveSize = ui->le_HardParam_SuctionOffset->text().toInt();
+    if(nMoveSize < 0 ){
+        return;
+    }
+    //数据类型
+    int nDataType = 0;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+    m_pSettinsObj->SetParam(DEBUGHWARMMIXINGX,QString::number(nMoveSize));
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-横向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionXRead_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-纵向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionYRead_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-触液深度读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionDepthRead_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 2;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-吸样位-偏移量读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_SuctionOffsetRead_clicked()
+{
+    //操作类型-吸样位
+    int nOptionType = 4;
+    //位置类型
+    int nPosType = 3;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-当前位置-横向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_CurrentPosXRead_clicked()
+{
+    //操作类型-当前位置
+    int nOptionType = 5;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-当前位置-横向复位
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_CurrentPosXReset_clicked()
+{
+    //操作类型-当前位置
+    int nOptionType = 5;
+    //位置类型
+    int nPosType = 0;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 2;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-加样臂-当前位置-纵向读取
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_CurrentPosYRead_clicked()
+{
+    //操作类型-当前位置
+    int nOptionType = 5;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 1;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+
+/*
+ *
+ *硬件调试界面-加样臂-当前位置-纵向复位
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_CurrentPosYReset_clicked()
+{
+    //操作类型-当前位置
+    int nOptionType = 5;
+    //位置类型
+    int nPosType = 1;
+    //移动距离
+    int nMoveSize = 0;
+    //数据类型
+    int nDataType = 2;
+    HardwareDebugLoadingArmCommand(nOptionType,nPosType,nMoveSize,nDataType);
+}
+
+/*
+ *
+ *硬件调试界面-所有参数-保存
+ *
+ */
+void debugIntefaceDlg::on_pb_HardParam_ArmParamAllSave_clicked()
+{
+    QByteArray byarrData;
+    m_pTestInterface->SendSerialData(m_pControlPanelsSerial,PL_FUN_AM_ID_DEBUG_HARDWARE_SAVE,byarrData);
+}
+
+
+
+

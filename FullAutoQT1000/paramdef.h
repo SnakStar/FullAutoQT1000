@@ -1,7 +1,8 @@
 ﻿#ifndef PARAMDEF_H
 #define PARAMDEF_H
 
-#define SCANMODE "GeneralSet/ScanMode"
+#define SCANMODE  "GeneralSet/ScanMode"
+#define BLOODTYPE "GeneralSet/BloodType"
 
 //调试界面-仪器调试参数设置
 #define DEBUGMODE   "DebugParamSet/DebugMode"
@@ -10,15 +11,35 @@
 #define DILUENT     "DebugParamSet/Diluent"
 #define SAMPLESIZE  "DebugParamSet/SampleSize"
 
-#define SCANSTART   "DebugParamSet/ScanStart"
-#define CALCMETHOD  "DebugParamSet/CalcMethod"
-#define AMPPARAM    "DebugParamSet/AmpParam"
-#define TESTTIME    "DebugParamSet/TestTime"
+#define DEBUGSCANSTART   "DebugParamSet/ScanStart"
+#define DEBUGCALCMETHOD  "DebugParamSet/CalcMethod"
+#define DEBUGAMPPARAM    "DebugParamSet/AmpParam"
+#define DEBUGTESTTIME    "DebugParamSet/TestTime"
 
 //调试界面-仪器参数设置
 #define SAMPLEOFFSETCONST  "DebugDeviceSet/SampleOffsetConst"
 #define SAMPLEOFFSETCOEFF  "DebugDeviceSet/SampleOffsetCoeff"
 #define DILUENTOFFSETCONST "DebugDeviceSet/DiluentOffsetConst"
 #define DILUENTOFFSETCOEFF "DebugDeviceSet/DiluentOffsetCoeff"
+
+//调试界面-硬件参数设置
+#define DEBUGHWARMSAMPLEAddX      "DebugHardwareSet/SampleAddX"
+#define DEBUGHWARMSAMPLEAddY      "DebugHardwareSet/SampleAddY"
+#define DEBUGHWARMMIXINGX         "DebugHardwareSet/MixingX"
+#define DEBUGHWARMMIXINGY         "DebugHardwareSet/MixingY"
+#define DEBUGHWARMMIXINGDEPTH     "DebugHardwareSet/MixingDEPTH"
+#define DEBUGHWARMCLEAREOUTX      "DebugHardwareSet/CleareOutX"
+#define DEBUGHWARMCLEAREOUTY      "DebugHardwareSet/CleareOutY"
+#define DEBUGHWARMBUFFERX         "DebugHardwareSet/BufferX"
+#define DEBUGHWARMBUFFERY         "DebugHardwareSet/BufferY"
+#define DEBUGHWARMBUFFERDEPTH     "DebugHardwareSet/BufferDepth"
+#define DEBUGHWARMBUFFEROFFSET    "DebugHardwareSet/BufferOffset"
+#define DEBUGHWARMSUCTIONX        "DebugHardwareSet/SuctionX"
+#define DEBUGHWARMSUCTIONY        "DebugHardwareSet/SuctionY"
+#define DEBUGHWARMSUCTIONDEPTH    "DebugHardwareSet/SuctionDepth"
+#define DEBUGHWARMSUCTIONOFFSET   "DebugHardwareSet/SuctionOffset"
+#define DEBUGHWARMCURRENTPOSX     "DebugHardwareSet/CurrentPosX"
+#define DEBUGHWARMCURRENTPOSY     "DebugHardwareSet/CurrentPosY"
+
 
 #endif // PARAMDEF_H

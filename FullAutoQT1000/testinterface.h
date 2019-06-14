@@ -79,6 +79,15 @@ public:
     QMap<QString,QString> GetTestItems();
 public:
     bool eventFilter(QObject *obj, QEvent *e);
+public:
+    //发送串口数据
+    void SendSerialData(QextSerialPort *ser, quint16 nFuncIndex, QByteArray arrData=QByteArray(""));
+    //整形转字节型
+    QByteArray IntToBytes(qint32 nValue, quint8 nCount=4);
+    //字节形转整型
+    quint32 BytesToInt(QByteArray byarr);
+signals:
+    void sendDebugHardwareData(QByteArray byData);
 private slots:
     //接收检测板串口数据
     void RecvCheckPanelsData();
@@ -231,8 +240,6 @@ private:
     void ClearTableInfo();
     //初始化测试数据
     void InitVectorTestInfo();
-    //发送串口数据
-    void SendSerialData(QextSerialPort &ser, quint16 nFuncIndex, QByteArray arrData=QByteArray(""));
     //发送下一个样本加样命令
     void SendWaitAddSampleOrder();
     //发送下一个等待测试命令
@@ -257,10 +264,6 @@ private:
     void SetRowColor(QColor color, quint8 nRow);
     //获取校验和
     quint32 GetCheckSum(QByteArray byarrDataLength,QByteArray byarrData);
-    //整形转字节型
-    QByteArray IntToBytes(quint32 nValue,quint8 nCount=4);
-    //字节形转整型
-    quint32 BytesToInt(QByteArray byarr);
     //测试完成
     //void TestComplete();
     //检测用户项目输入
@@ -306,9 +309,9 @@ private:
     //样品圆
     CircleLayout* m_SampleCircle;
     //仪器检测板串口对象
-    QextSerialPort m_CheckPanelsSerial;
+    QextSerialPort *m_CheckPanelsSerial;
     //仪器控制板串口对象
-    QextSerialPort m_ControlPanelsSerial;
+    QextSerialPort *m_ControlPanelsSerial;
     //PC端串对象
     QextSerialPort* m_ConnPCSerial;
     //仪器数据

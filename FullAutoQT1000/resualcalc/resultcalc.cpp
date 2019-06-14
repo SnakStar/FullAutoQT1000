@@ -838,8 +838,6 @@ QString ResultCalc::calculateResult2(RawTestInfo& testinfo,unsigned int *scanDat
                     value1 = (area1*bit5)/area2; //比值1
                 }
             }
-            testinfo.m_nTest1Ratio = value1;
-
             /*
             //计算第二次的扫描数据的 面积积分
             area1 =0; //面积一
@@ -896,6 +894,7 @@ QString ResultCalc::calculateResult2(RawTestInfo& testinfo,unsigned int *scanDat
                 value = (value1 + value2)/20000;   // 平均值
             }*/
             value = (value1)/10000;
+            testinfo.m_nTest1Ratio = value1;
             strTempLogInfo = QString(" 比值结果:%1").arg(value);
             strTestLogInfo = strTestLogInfo + strTempLogInfo;
             qDebug()<<strTestLogInfo;

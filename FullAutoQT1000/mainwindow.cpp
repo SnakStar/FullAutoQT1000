@@ -166,6 +166,16 @@ QextSerialPort *MainWindow::GetHL7SerialPort()
     return &m_SerialHL7;
 }
 
+QextSerialPort *MainWindow::GetCheckPanelsSerial()
+{
+    return &m_CheckPanelsSerial;
+}
+
+QextSerialPort *MainWindow::GetControlPanelsSerial()
+{
+    return &m_ControlPanelsSerial;
+}
+
 /********************************************************
  *@Name:        InitPrintSerial
  *@Author:      HuaT
@@ -180,7 +190,7 @@ bool MainWindow::InitPrintSerial()
     //串口初始化
     m_SerialPrint.setBaudRate(BAUD9600);
 #ifdef Q_OS_WIN32
-    m_SerialPrint.setPortName("\\\\.\\com1");
+    m_SerialPrint.setPortName("\\\\.\\com3");
 #else
     m_SerialPrint.setPortName("/dev/ttyO2");
 #endif
@@ -196,7 +206,7 @@ bool MainWindow::InitHl7Serial()
     //串口初始化
     m_SerialHL7.setBaudRate(BAUD115200);
 #ifdef Q_OS_WIN32
-    m_SerialHL7.setPortName("\\\\.\\com3");
+    m_SerialHL7.setPortName("\\\\.\\com4");
 #else
     m_SerialHL7.setPortName("/dev/ttyO0");
 #endif
@@ -205,6 +215,57 @@ bool MainWindow::InitHl7Serial()
         qDebug()<<"HL7 Serial open the fail";
     }
     return bOpen;
+}
+
+/*
+ *
+ *初始化检测板串口
+ */
+/////////////////////////////////////////////////////////
+bool MainWindow::InitCheckPanelsSerial()
+{
+    //串口初始化
+    m_CheckPanelsSerial.setBaudRate(BAUD19200);
+#ifdef Q_OS_WIN32
+    #ifndef SERIALDEBUG
+        m_CheckPanelsSerial.setPortName("\\\\.\\com9");
+    //m_CheckPanelsSerial.setTimeout(1000);
+    #else
+        m_CheckPanelsSerial.setPortName("\\\\.\\com1");
+    #endif
+#else
+    m_CheckPanelsSerial.setPortName("/dev/ttyO1");
+#endif
+    bool bOpen = m_CheckPanelsSerial.open(QIODevice::ReadWrite);
+    if(!bOpen){
+        qDebug()<<"CheckPanels Serial open the fail";
+    }
+    return bOpen;
+}
+
+/*
+ *
+ *初始化控制板串口
+ */
+bool MainWindow::InitControlPanelsSerial()
+{
+    //串口初始化
+    m_ControlPanelsSerial.setBaudRate(BAUD19200);
+#ifdef Q_OS_WIN32
+    #ifndef SERIALDEBUG
+        m_ControlPanelsSerial.setPortName("\\\\.\\com10");
+    #else
+        m_ControlPanelsSerial.setPortName("\\\\.\\com3");
+    #endif
+#else
+    m_ControlPanelsSerial.setPortName("/dev/ttyO4");
+#endif
+    bool bOpen = m_ControlPanelsSerial.open(QIODevice::ReadWrite);
+    if(!bOpen){
+        qDebug()<<"ControlPanels Serial open the fail";
+    }
+    return bOpen;
+
 }
 
 
@@ -259,19 +320,46 @@ void MainWindow::InitMainInterface()
 void MainWindow::InitSettinsParam()
 {
     m_mapSetParam.insert(SCANMODE,"0");
+    m_mapSetParam.insert(BLOODTYPE,"0");
     m_mapSetParam.insert(DEBUGMODE,"0");
     m_mapSetParam.insert(CONNPCMODE,"0");
-    m_mapSetParam.insert(AMPPARAM,"0");
-    m_mapSetParam.insert(SCANSTART,"0");
+    m_mapSetParam.insert(DEBUGAMPPARAM,"0");
+    m_mapSetParam.insert(DEBUGSCANSTART,"0");
     m_mapSetParam.insert(SAMPLESIZE,"0");
     m_mapSetParam.insert(DILUENT,"0");
-    m_mapSetParam.insert(CALCMETHOD,"0");
-    m_mapSetParam.insert(TESTTIME,"0");
+    m_mapSetParam.insert(DEBUGCALCMETHOD,"0");
+    m_mapSetParam.insert(DEBUGTESTTIME,"0");
 
     m_mapSetParam.insert(SAMPLEOFFSETCOEFF,"0");
     m_mapSetParam.insert(SAMPLEOFFSETCONST,"0");
     m_mapSetParam.insert(DILUENTOFFSETCOEFF,"0");
     m_mapSetParam.insert(DILUENTOFFSETCONST,"0");
+    //硬件参数
+    //吸样位
+    m_mapSetParam.insert(DEBUGHWARMSAMPLEAddX,"0");
+    m_mapSetParam.insert(DEBUGHWARMSAMPLEAddY,"0");
+    //混匀位
+    m_mapSetParam.insert(DEBUGHWARMMIXINGX,"0");
+    m_mapSetParam.insert(DEBUGHWARMMIXINGY,"0");
+    m_mapSetParam.insert(DEBUGHWARMMIXINGDEPTH,"0");
+    //清洗位
+    m_mapSetParam.insert(DEBUGHWARMCLEAREOUTX,"0");
+    m_mapSetParam.insert(DEBUGHWARMCLEAREOUTY,"0");
+    //缓冲液位
+    m_mapSetParam.insert(DEBUGHWARMBUFFERX,"0");
+    m_mapSetParam.insert(DEBUGHWARMBUFFERY,"0");
+    m_mapSetParam.insert(DEBUGHWARMBUFFERDEPTH,"0");
+    m_mapSetParam.insert(DEBUGHWARMBUFFEROFFSET,"0");
+    //吸样位
+    m_mapSetParam.insert(DEBUGHWARMSUCTIONX,"0");
+    m_mapSetParam.insert(DEBUGHWARMSUCTIONY,"0");
+    m_mapSetParam.insert(DEBUGHWARMSUCTIONDEPTH,"0");
+    m_mapSetParam.insert(DEBUGHWARMSUCTIONOFFSET,"0");
+    //当前加样臂位置
+    m_mapSetParam.insert(DEBUGHWARMCURRENTPOSX,"0");
+    m_mapSetParam.insert(DEBUGHWARMCURRENTPOSX,"0");
+
+
 }
 
 /********************************************************
