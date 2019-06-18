@@ -20,8 +20,6 @@ SetInterface::SetInterface(QWidget *parent) :
     m_pTestInterface = (static_cast<MainWindow*>(m_pMainWnd))->GetTestInterface();
     //获取数据库对象
     m_devDB = (static_cast<MainWindow*>(m_pMainWnd))->GetDatabaseObj();
-    //
-    connect(m_pTestInterface,SIGNAL(sendSampleTypeAddSignals()),this,SLOT(RecvSampleTypeAddSignals()) );
     //m_pTestInterface->m_mapTestItemPos.key("4","");
     //获取配置参数内容
     //m_SetParam = m_pSettinsObj->ReadSettingsInfoToMap();
@@ -33,12 +31,6 @@ SetInterface::SetInterface(QWidget *parent) :
     InitUserAccountTable();
     //更新数据到帐户控件
     UpdateUserTable();
-    //获取加样样本类型指针对象
-    m_pmapSampleTypeObj = m_pTestInterface->GetSampleTypeObj();
-    //初始化样本类型列表框
-    InitSampleTypeTable();
-    //更新加样样本类型数据到列表框
-    UpdateSampleTypeTable();
     //关机按钮
     ui->btn_Set_Poweroff->hide();
     //
@@ -149,6 +141,11 @@ void SetInterface::UpdateUIControl()
     }else{
         ui->rb_Set_AutoEncode->setChecked(true);
     }
+    if(m_pSettinsObj->GetParam(BLOODTYPE).toInt() == 1 ){
+        ui->rb_Set_GeneralBlood->setChecked(true);
+    }else{
+        ui->rb_Set_GeneralSerum->setChecked(true);
+    }
 }
 
 /********************************************************
@@ -210,29 +207,6 @@ void SetInterface::InitSysTimeCon()
     ui->de_Set_dteTimeSet->setTime(tm);
 }
 
-/********************************************************
- *@Name:        InitSampleTypeTable
- *@Author:      HuaT
- *@Description: 初始化加样样本类型列表框
- *@Param1:      无
- *@Return:      无
- *@Version:     1.0
- *@Date:        2019-6-14
-********************************************************/
-void SetInterface::InitSampleTypeTable()
-{
-    ui->tw_Set_GeneralSampleType->setEditTriggers(QTableWidget::NoEditTriggers);
-    ui->tw_Set_GeneralSampleType->setSelectionBehavior(QTableWidget::SelectRows);
-    ui->tw_Set_GeneralSampleType->setColumnCount(3);
-    ui->tw_Set_GeneralSampleType->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    ui->tw_Set_GeneralSampleType->verticalHeader()->setHidden(true);
-
-    QStringList listHeader;
-    listHeader<<"项目名称"<<"血清"<<"全血";
-    ui->tw_Set_GeneralSampleType->setHorizontalHeaderLabels(listHeader);
-    ui->tw_Set_GeneralSampleType->verticalHeader()->setDefaultSectionSize(42);
-}
-
 /*
  *
  *当前行改变
@@ -255,24 +229,15 @@ void SetInterface::on_btn_Set_GenSave_clicked()
     }else{
         m_pSettinsObj->SetParam(SCANMODE,"1");
     }
+    //血样类型
+    if(ui->rb_Set_GeneralSerum->isChecked()){
+        m_pSettinsObj->SetParam(BLOODTYPE,"0");
+    }else{
+        m_pSettinsObj->SetParam(BLOODTYPE,"1");
+    }
     //写入配置文件
     m_pSettinsObj->SaveAllSettingsInfoToFile();
-    //保存当前配置数据到样本类型数据库
-    int row = ui->tw_Set_GeneralSampleType->rowCount();
-    bool bCheck = false;
-    for(int n=0; n<row; n++){
-        QString strItem1 = ui->tw_Set_GeneralSampleType->item(n,0)->text();
-        bCheck = static_cast<QRadioButton*>(ui->tw_Set_GeneralSampleType->cellWidget(n,1) )->isChecked();
-        if(bCheck == true){
-            //血清
-            (*m_pmapSampleTypeObj)[strItem1] = "0";
-        }else{
-            //全血
-            (*m_pmapSampleTypeObj)[strItem1] = "1";
-        }
-    }
-    //map数据对象更新到数据库
-    SaveSampleTypeObjToDb();
+    //
     emit m_pSettinsObj->emitSettingChange();
     //提示
     QMessageBox::information(this,"Note","保存成功",QMessageBox::Ok);
@@ -308,6 +273,26 @@ void SetInterface::on_rb_Set_AutoEncode_clicked()
 void SetInterface::on_rb_Set_ScanEncode_clicked()
 {
     m_pSettinsObj->SetParam(SCANMODE,"1");
+}
+
+/*
+ *
+ * 常规界面-血清类型单选控件
+ *
+ */
+void SetInterface::on_rb_Set_GeneralSerum_clicked()
+{
+    m_pSettinsObj->SetParam(BLOODTYPE,"0");
+}
+
+/*
+ *
+ * 常规界面-全血类型单选控件
+ *
+ */
+void SetInterface::on_rb_Set_GeneralBlood_clicked()
+{
+    m_pSettinsObj->SetParam(BLOODTYPE,"1");
 }
 
 /*
@@ -516,20 +501,6 @@ void SetInterface::RecvModifyRenfValue(RenfInfo &ri)
 }
 
 /********************************************************
- *@Name:        RecvSampleTypeAddSignals
- *@Author:      HuaT
- *@Description: 接收加样样本增加信号
- *@Param:       无
- *@Return:      无
- *@Version:     1.0
- *@Date:        2016-5-13
-********************************************************/
-void SetInterface::RecvSampleTypeAddSignals()
-{
-    UpdateSampleTypeTable();
-}
-
-/********************************************************
  *@Name:        GetRowValue
  *@Author:      HuaT
  *@Description: 获取指定表格控件的一行数据
@@ -652,52 +623,11 @@ void SetInterface::UpdateUserTable()
 }
 
 /********************************************************
- *@Name:        UpdateSampleTypeTable
- *@Author:      HuaT
- *@Description: 更新加样样本类型数据到列表控件
- *@Param:       无
- *@Return:      无
- *@Version:     1.0
- *@Date:        2018-9-19
-********************************************************/
-void SetInterface::UpdateSampleTypeTable()
-{
-    ui->tw_Set_GeneralSampleType->setRowCount(0);
-    m_pmapSampleTypeObj->clear();
-
-    QString strSql = QString("select itemname,bloodtype from sampletype ");
-    QStringList listRe = m_devDB->ExecQuery(strSql);
-    for(int n=0; n<listRe.size(); n+=2){
-        QButtonGroup* bg = new QButtonGroup(this);
-        ui->tw_Set_GeneralSampleType->insertRow(ui->tw_Set_GeneralSampleType->rowCount());
-        QTableWidgetItem* item = new QTableWidgetItem();
-        item->setText(listRe.at(n));
-        ui->tw_Set_GeneralSampleType->setItem(ui->tw_Set_GeneralSampleType->rowCount()-1,0,item);
-        ui->tw_Set_GeneralSampleType->item(ui->tw_Set_GeneralSampleType->rowCount()-1,0)->setTextAlignment(Qt::AlignCenter);
-        QRadioButton* rb1 = new QRadioButton("                                                 ");
-        ui->tw_Set_GeneralSampleType->setCellWidget(ui->tw_Set_GeneralSampleType->rowCount()-1,1,rb1);
-        ui->tw_Set_GeneralSampleType->item(ui->tw_Set_GeneralSampleType->rowCount()-1,0)->setTextAlignment(Qt::AlignCenter);
-        bg->addButton(rb1);
-        QRadioButton* rb2 = new QRadioButton("                                                 ");
-        ui->tw_Set_GeneralSampleType->setCellWidget(ui->tw_Set_GeneralSampleType->rowCount()-1,2,rb2);
-        ui->tw_Set_GeneralSampleType->item(ui->tw_Set_GeneralSampleType->rowCount()-1,0)->setTextAlignment(Qt::AlignCenter);
-        bg->addButton(rb2);
-
-        m_pmapSampleTypeObj->insert(listRe.at(n),listRe.at(n+1));
-        if(listRe.at(n+1).compare("0") == 0){
-            rb1->setChecked(true);
-        }else{
-            rb2->setChecked(true);
-        }
-    }
-}
-
-/********************************************************
  *@Name:        on_btn_Set_Poweroff_clicked
  *@Author:      HuaT
  *@Description: 关闭仪器
- *@Param:       无
- *@Return:      无
+ *@Param:
+ *@Return:
  *@Version:     1.0
  *@Date:        2018-9-19
 ********************************************************/
@@ -758,32 +688,6 @@ bool SetInterface::CheckPassword(QString strPw)
         return true;
     }else{
         return false;
-    }
-}
-
-/********************************************************
- *@Name:        SaveSampleTypeObjToDb
- *@Author:      HuaT
- *@Description: 保存加样样本数据内容到数据库
- *@Param:       无
- *@Return:      无
- *@Version:     1.0
- *@Date:        2019-6-15
-********************************************************/
-void SetInterface::SaveSampleTypeObjToDb()
-{
-    QString strSql;
-    QStringList listKeys = m_pmapSampleTypeObj->keys();
-    QString strKey,strValue;
-    bool bRet;
-    for(int n=0; n<listKeys.size(); n++){
-        strKey = listKeys.at(n);
-        strValue = m_pmapSampleTypeObj->value(listKeys.at(n));
-        strSql = QString("update SampleType set bloodtype='%1' where itemname='%2' ").arg(strValue).arg(strKey);
-        bRet = m_devDB->Exec(strSql);
-        if(bRet == false){
-            qDebug()<<"UpdateSampleTypeObjToDb is Failed ,";
-        }
     }
 }
 

@@ -33,7 +33,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="NormalDebugPage">
     <widget class="QGroupBox" name="groupBox">
@@ -441,45 +441,6 @@
         <x>290</x>
         <y>40</y>
         <width>71</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>开启</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QGroupBox" name="groupBox_Param_DebugCard">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>380</y>
-       <width>401</width>
-       <height>81</height>
-      </rect>
-     </property>
-     <property name="title">
-      <string>测试试剂卡模式</string>
-     </property>
-     <widget class="QRadioButton" name="rb_Param_CardClose">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>40</y>
-        <width>117</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>关闭</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="rb_Param_CardOpen">
-      <property name="geometry">
-       <rect>
-        <x>300</x>
-        <y>40</y>
-        <width>91</width>
         <height>21</height>
        </rect>
       </property>
@@ -1257,7 +1218,7 @@
         <string>写入</string>
        </property>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -1606,7 +1567,7 @@
         <string>复位</string>
        </property>
       </widget>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
          <x>10</x>

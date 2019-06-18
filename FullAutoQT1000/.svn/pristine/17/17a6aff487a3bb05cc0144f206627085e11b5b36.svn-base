@@ -1,0 +1,93 @@
+﻿#ifndef COMMON_H
+#define COMMON_H
+
+
+//响应返回帧
+#define PL_FUN_ACK                          0x0001
+//仪器报警
+#define PL_FUN_ALARM                        0x0002
+
+//////////////////////////////////////////////////
+//开机自检
+#define PL_FUN_AM_HARDWEAR_CHECK            0x0010
+//新建测试
+#define PL_FUN_AM_NEW_TEST                  0x0011
+//扫码结果
+#define PL_FUN_AM_SCAN_RESULT               0x0012
+//开始加样
+#define PL_FUN_AM_START_SAMPLE              0x0013
+//加样完成
+#define PL_FUN_AM_SAMPLE_COMPLETE           0x0014
+//准备测试
+#define PL_FUN_AM_PREPARE_TEST              0x0015
+//测试准备完成
+#define PL_FUN_AM_PREPARE_TEST_COMPLETE     0x0016
+//开始测试
+#define PL_FUN_AM_START_TEST                0x0017
+//测试结果
+#define PL_FUN_AM_TEST_RESULT               0x0018
+//准备卸卡
+#define PL_FUN_AM_PREPARE_UNSTALL           0x0019
+//卸卡准备完成
+#define PL_FUN_AM_PREPARE_UNSTALL_COMPLETE  0x001A
+//开始卸卡
+#define PL_FUN_AM_START_UNSTALL             0x001B
+//卸卡完成
+#define PL_FUN_AM_START_UNSTALL_COMPLETE    0x001C
+//ID卡数据
+#define PL_FUN_AM_ID_CARD_DATA              0x001D
+//急诊扫码
+#define PL_FUN_AM_ID_EMER_SCANRESULT        0x001E
+//推卡电机参数
+#define PL_FUN_AM_ID_DEBUG_PUSHMOTOR        0x001F
+//推卡电机参数完成
+#define PL_FUN_AM_ID_DEBUG_PUSHMOTOR_COMPLETE   0x0020
+//转盘参数
+#define PL_FUN_AM_ID_DEBUG_DIALPARAM            0x0021
+//转盘参数设置完成
+#define PL_FUN_AM_ID_DEBUG_DIALPARAM_COMPLETE   0x0022
+//退卡电机参数
+#define PL_FUN_AM_ID_DEBUG_EXIMOTOR             0x0023
+//
+#define PL_FUN_AM_ID_DEBUG_EXIMOTOR_COMPLETE    0x0024
+//设置加样臂参数
+#define PL_FUN_AM_ID_DEBUG_LOADINGARMSET        0x0025
+//接收加样臂参数
+#define PL_FUN_AM_ID_DEBUG_LOADINGARMRCEV       0x0026
+//隔膜泵参数
+#define PL_FUN_AM_ID_DEBUG_DIAPHRAGM            0x0027
+//隔膜泵参数设置完成
+#define PL_FUN_AM_ID_DEBUG_DIAPHRAGM_COMPLETE   0x0028
+//电磁阀参数
+#define PL_FUN_AM_ID_DEBUG_SOLENOID             0x0029
+//电磁阀参数设置完成
+#define PL_FUN_AM_ID_DEBUG_SOLENOID_COMPLETE    0x002A
+//柱塞泵参数
+#define PL_FUN_AM_ID_DEBUG_PLUNGERPUMP          0x002B
+//柱塞泵参数设置完成
+#define PL_FUN_AM_ID_DEBUG_PLUNGERPUMP_COMPLETE 0x002C
+//调试硬件参数保存
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_SAVE        0x002D
+//调试硬件参数取消保存
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_CANCEL      0x002E
+//调试硬件参数开始
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_START       0x002F
+//调试硬件参数结束
+#define PL_FUN_AM_ID_DEBUG_HARDWARE_END         0x0030
+
+
+
+//备用
+//#define PL_FUN_AM_PREPARE_UNSTALL           0x0015
+//#define PL_FUN_AM_START_UNSTALL             0x0016
+
+//////////////////////////////////////////////////////////////////////////////
+#ifndef MAKEWORD
+#define MAKEWORD(low,high)		    (((quint8)(low)) | (((quint8)(high)) << 8))
+#endif
+
+#ifndef MAKEFOURWORD
+#define MAKEFOURWORD(A,B,C,D)		(((quint8)(A)) | (((quint8)(B)) << 8) | (((quint8)(C)) << 16) | (((quint8)(D)) << 24) )
+#endif
+
+#endif // COMMON_H

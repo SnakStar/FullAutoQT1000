@@ -184,11 +184,6 @@ void debugIntefaceDlg::InitParamSetShow()
     }else{
         ui->rb_Param_PCConnOpen->setChecked(true);
     }
-    if(m_pSettinsObj->GetParam(TESTCARDMODE) == "0" ){
-        ui->rb_Param_CardClose->setChecked(true);
-    }else{
-        ui->rb_Param_CardOpen->setChecked(true);
-    }
     //调试参数
     QString strAmp = m_pSettinsObj->GetParam(DEBUGAMPPARAM);
     ui->le_Param_Amp->setText(strAmp);
@@ -431,15 +426,10 @@ void debugIntefaceDlg::on_pb_Param_SaveParam_clicked()
     }else{
         m_pSettinsObj->SetParam(DEBUGMODE,"1");
     }
-    if(ui->rb_Param_PCConnClose->isChecked() == true){
+    if(ui->rb_Param_PCConnClose->isChecked() ==true){
         m_pSettinsObj->SetParam(CONNPCMODE,"0");
     }else{
         m_pSettinsObj->SetParam(CONNPCMODE,"1");
-    }
-    if(ui->rb_Param_CardClose->isChecked() == true){
-        m_pSettinsObj->SetParam(TESTCARDMODE,"0");
-    }else{
-        m_pSettinsObj->SetParam(TESTCARDMODE,"1");
     }
 
     m_pSettinsObj->SetParam(DILUENT,ui->le_Param_Diluent->text());

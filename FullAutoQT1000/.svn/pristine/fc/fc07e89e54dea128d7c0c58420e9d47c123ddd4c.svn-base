@@ -39,11 +39,6 @@ public:
     void UpdateDbToRenf();
     
 private slots:
-    void RecvAddRenfValue(RenfInfo& ri);
-    void RecvModifyRenfValue(RenfInfo& ri);
-    void RecvSampleTypeAddSignals();
-
-private slots:
     void on_lw_Set_Navigation_currentRowChanged(int currentRow);
 
     void on_btn_Set_GenSave_clicked();
@@ -60,6 +55,10 @@ private slots:
 
     void on_btn_Set_RenfDelete_clicked();
 
+private slots:
+    void RecvAddRenfValue(RenfInfo& ri);
+    void RecvModifyRenfValue(RenfInfo& ri);
+
     void on_btn_Set_SetDateSave_clicked();
 
     void on_btn_Set_Poweroff_clicked();
@@ -71,6 +70,10 @@ private slots:
     void on_btn_Set_UserModify_clicked();
 
     void on_btn_Set_UserDelete_clicked();
+
+    void on_rb_Set_GeneralSerum_clicked();
+
+    void on_rb_Set_GeneralBlood_clicked();
 
 private:
     Ui::SetInterface *ui;
@@ -84,8 +87,6 @@ private:
     CUtilSettings* m_pSettinsObj;
     //测试界面
     TestInterface* m_pTestInterface;
-    //加样样本类型指针对象
-    QMap<QString,QString>* m_pmapSampleTypeObj;
     //数据库对象
     CQtProDB* m_devDB;
     //工具对象
@@ -98,8 +99,6 @@ private:
     void SetSysDateTime(QDate& date, QTime time);
     //更新用户登陆数据到表格控件
     void UpdateUserTable();
-    //更新加样样本类型数据到表格控件
-    void UpdateSampleTypeTable();
     //输入法对象
     //MyInputPanelContext* m_myInputPanel;
 private:
@@ -113,13 +112,9 @@ private:
     void InitUserAccountTable();
     //初始化系统时间控件
     void InitSysTimeCon();
-    //初始化加样样本类型列表框
-    void InitSampleTypeTable();
 private:
     //检测调试界面输入密码
     bool CheckPassword(QString strPw);
-    //保存map数据内容到数据库
-    void SaveSampleTypeObjToDb();
 };
 
 #endif // SETINTERFACE_H

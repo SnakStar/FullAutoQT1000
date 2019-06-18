@@ -48,16 +48,13 @@
 #define LOGPATH "/home/root/FullAutoQT/FullAutoLog.txt"
 
 //#define SERIALDEBUG
-//enum LogTextColor{GRAY,GREED,RED,YELLOW,MAGENTA};
-enum LogTextColor{LOGNOTE1,LOGNORMAL,LOGERROR,LOGWARNING,LOGNOTE2};
+enum LogTextColor{GRAY,GREED,RED,YELLOW,MAGENTA};
+//enum LogTextColor{NOTE,NORMAL,ERROR,WARNING,NOTE};
 
-#define STARTTEST         "本次测试开始,共%1例样本"
-#define RUNADDSAMPLE      "样本 %1 开始进行加样"
-#define ADDSAMPLECOMPLETE "样本 %1 加样完成,试剂反应位 %2,反应时间 %3"
-#define RUNCHECKING       "样本 %1 时间到,等待开始进行检测"
-#define CHECKINGCOMPLETE  "样本 %1 ,试剂卡位 %2,检测完成,开始退卡"
-#define EXITCARDCOMPLETE  "试剂卡位 %1 退卡完成"
-#define ENDTEST           "本轮测试已经完成"
+#define STARTTEST    "本次测试开始,共%1例样本"
+#define RUNADDSAMPLE "样本 %1 开始进行加样"
+#define RUNCHECKING  "样本 %1 时间到,开始进行检测"
+#define ENDTEST      "本轮测试已经完成"
 
 #define CHECKSTATUS    "rgb(0,0,255)"
 #define WAITSTATUS     "rgb(255,0,0)"
@@ -79,6 +76,8 @@ public:
     explicit TestInterface(QWidget *parent = 0);
     ~TestInterface();
 public:
+    QMap<QString,QString> GetTestItems();
+public:
     bool eventFilter(QObject *obj, QEvent *e);
 public:
     //发送串口数据
@@ -87,13 +86,8 @@ public:
     QByteArray IntToBytes(qint32 nValue, quint8 nCount=4);
     //字节形转整型
     quint32 BytesToInt(QByteArray byarr);
-    //获取加样样本类型数据对象
-    QMap<QString,QString>* GetSampleTypeObj();
-    //
-    QMap<QString,QString> GetTestItems();
 signals:
     void sendDebugHardwareData(QByteArray byData);
-    void sendSampleTypeAddSignals();
 private slots:
     //接收检测板串口数据
     void RecvCheckPanelsData();
@@ -107,8 +101,6 @@ private slots:
     void ControlCheckFunc();
     //扫码模式改变
     void ScanModeChange();
-    //测试试剂卡模式改变
-    void TestCardInfoChange();
 private slots:
     void on_pb_Test_NewTest_clicked();
 
@@ -332,8 +324,6 @@ private:
     QMap<QString,QString> m_mapTestItemPos;
     //ID卡数据
     QMap<QString,IDCardInfo> m_mapIDCardInfo;
-    //吸样样本类型
-    QMap<QString,QString> m_mapSampleType;
     //配置文件对象
     CUtilSettings*  m_settins;
     //数据库对象

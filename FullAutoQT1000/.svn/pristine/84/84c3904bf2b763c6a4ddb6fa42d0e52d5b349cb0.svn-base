@@ -77,8 +77,6 @@ TestInterface::TestInterface(QWidget *parent) :
     InitScanMode();
     //连接设置界面扫码槽
     connect(m_settins,SIGNAL(SettingChange()),this,SLOT(ScanModeChange()) );
-    //连接设置界面测试试剂卡信息
-    connect(m_settins,SIGNAL(SettingChange()),this,SLOT( TestCardInfoChange() ) );
     //设置日志字体大小
     ui->textBrowser->setFontPointSize(12);
     //已完成测试总数初始化
@@ -87,9 +85,7 @@ TestInterface::TestInterface(QWidget *parent) :
     //ShowLogText(ui->textBrowser,strContent,MAGENTA);
 
     //模拟ID卡闸
-    if(m_settins->GetParam(TESTCARDMODE).toInt() == 1){
-        SimulationIDCardCast();
-    }
+    SimulationIDCardCast();
 
     //更新测试按钮
     InitValidTestItem();
@@ -126,9 +122,8 @@ bool TestInterface::eventFilter(QObject *obj, QEvent *e){
 }
 
 void TestInterface::SimulationIDCardCast(){
-    m_mapIDCardInfo.clear();
     //测试用数据卡
-    QString strIDCard="3130313031313130303030303031202020202020003C0600303138313130303414061E641405010001190A1400C8687343525020202020202020202020202020202075672F4C202020202020016400003200C80000113F062F42052B00000309322D000000043A2B00000000002B00000000002B00000000000D121A052B000004313D2D0000091B0D2B00000000002B00000000002B0000000000145313052B00000635412D00002311002B00000000002B00000000002B00000000001B3B51052B00000B443C2D00008E335A2B00000000002B00000000002B0000000000000000002B00000000002B00000000002B00000000002B00000000002B0000000000FFFFFF";
+    QString strIDCard="313031303130303030303031303120202020202000B408013131313131313131120B085A0001010100110601F43068734352502020202020202020202020202020206E672F6D4C2020202020025A00000100640000000200002F052B00001101122D000000001A2B00000000002B00000000002B0000000000000225052B000035014D2D000001005E2B00000000002B00000000002B000000000000045A052B00000C00172B00000000212B00000000002B00000000002B000000000000115B052B00001C00012D00000100482B00000000002B00000000002B0000000000020325052B00002503422D000006000C2B00000000002B00000000002B0000000000FFFFFF";
     IDCardInfo ii;
     ii.m_byarrIDCardData = StrToBytes(strIDCard);
     ii.m_strTestItem = ii.m_byarrIDCardData.mid(46,20).trimmed();
@@ -138,6 +133,7 @@ void TestInterface::SimulationIDCardCast(){
     m_mapTestItemPos[ii.m_strTestItem] = "0";
 
     UpdateIDCardInfo(0,20,ii.m_strTestItem);
+
 
     IDCardInfo ii2 = ii;
     ii2.m_strTestItem = "BMP";
@@ -157,7 +153,7 @@ void TestInterface::SimulationIDCardCast(){
     UpdateIDCardInfo(2,20,ii3.m_strTestItem);
     //
     IDCardInfo ii4 = ii;
-    ii3.m_strTestItem = "hsCRP2";
+    ii3.m_strTestItem = "hsCRP";
     m_mapIDCardInfo["3"] = ii4;
     m_mapTestItemPos[ii.m_strTestItem] = "3";
 
@@ -267,10 +263,7 @@ bool TestInterface::ParseTestResultData(const QByteArray &AckData)
     QByteArray byarrResultData = AckData.mid(8,AckData.size()-8);
     //qDebug()<<byarrResultData.size(); //640
     //解析测试结果命令
-    //qDebug()<<"parse result:";
-    QString strLog;
-    strLog = QString(CHECKINGCOMPLETE).arg(nSamplePos).arg(nReagentPos);
-    ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
+    qDebug()<<"parse result:";
     QByteArray byarrIDCardData;
     for(int i=0; i<m_listSampleInfo.size(); i++){
         for(int n=0; n<m_listSampleInfo.at(i).m_listTestItem.size(); n++){
@@ -365,7 +358,6 @@ QByteArray TestInterface::PackageTestDataToSerial(RawTestInfo TestInfo,QByteArra
     byteContent.append((quint8)(TestInfo.m_nTest1Ratio/65536) );
     byteContent.append((quint8)(TestInfo.m_nTest1Ratio/256) );
     byteContent.append((quint8)(TestInfo.m_nTest1Ratio%256) );
-    //byteContent.append(ValueToHex(QString::number(TestInfo.m_nTest1Ratio),4,2));
     //面积1
     byteContent.append( static_cast<char>(0) );
     byteContent.append( static_cast<char>(0) );
@@ -1282,22 +1274,6 @@ void TestInterface::ParseIDCardData(const QByteArray &AckData)
     qDebug()<<"nRemaining:"<<nRemaining;
     m_mapIDCardInfo[QString::number(nReagentPos)] = ci;
     m_mapTestItemPos.insert(ci.m_strTestItem,QString::number(nReagentPos));
-    //检测此项目的血液类型是否存在
-    QString strSql = QString("select itemname from SampleType where itemname='%1'").arg(ci.m_strTestItem);
-    QStringList listCount = m_Devdb->ExecQuery(strSql);
-    //类型不存在
-    if(listCount.size() == 0){
-        //插入数据库，默认血清-0
-        strSql = QString("insert into sampletype values(null,'%1','0')").arg(ci.m_strTestItem);
-        bool bRet = m_Devdb->Exec(strSql);
-        if(bRet == false){
-            qDebug()<<"insert into sampletype is failed";
-        }
-        //更新样本数据内容
-        m_mapSampleType[ci.m_strTestItem] = "0";
-        //更新设置界面加样样本列表框数据
-        emit sendSampleTypeAddSignals();
-    }
     //更新ID卡界面参数信息
     UpdateIDCardInfo(nReagentPos,nRemaining,ci.m_strTestItem);
     if(nRemaining == 0){
@@ -1404,21 +1380,17 @@ void TestInterface::RecvCheckPanelsData()
                 break;
             case PL_FUN_AM_START_UNSTALL_COMPLETE:{
                 //卸卡完成
-                quint32 nCardNum = BytesToInt(CurrData.m_Data);
                 if(m_bIsCheckStatus){//如果是自检状态
                     //解析卸卡的数据
                     ParseUnstallCardData();
+                    quint32 nCardNum = BytesToInt(CurrData.m_Data);
                     m_SampleCircle->SetItemColor(nCardNum,NORMALSTATUS);
                     m_SampleCircle->SetItemText(nCardNum,QString::number(nCardNum));
                 }else{//如果是测试状态
-                    //当前卸卡完成
-                    QString strLog;
-                    strLog = QString(EXITCARDCOMPLETE).arg(nCardNum);
-                    ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
                     //卸卡完成,检测是否还有测试等待完成，没有则本轮测试完成
                     bool bComplete = CheckTestComplete();
                     if(bComplete){
-                        ShowLogText(ui->textBrowser,ENDTEST,LOGNOTE2);
+                        ShowLogText(ui->textBrowser,ENDTEST,MAGENTA);
                         AllTestComplete();
                     }
                     //检测状态关闭
@@ -1429,7 +1401,7 @@ void TestInterface::RecvCheckPanelsData()
                             break;
                         }else{
                             QString strLog = QString(RUNADDSAMPLE).arg(m_listWaitAddSampleQueue.front().m_nSamplePos);
-                            ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
+                            ShowLogText(ui->textBrowser,strLog,GREED);
                             QByteArray byarrTestNumbleData;
                             byarrTestNumbleData = GetWaitAddSampleInfoToQueue();
                             if(!byarrTestNumbleData.isEmpty()){
@@ -1441,7 +1413,7 @@ void TestInterface::RecvCheckPanelsData()
                         }
                     }else{//否则
                         QString strLog = QString(RUNCHECKING).arg(m_listWaitTestQueue.front().m_nSamplePos);
-                        ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
+                        ShowLogText(ui->textBrowser,strLog,GREED);
                         QByteArray byarrData = GetWaitCheckInfoToQueue();
                         if(!byarrData.isEmpty()){
                             SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_PREPARE_TEST,byarrData);
@@ -1693,31 +1665,6 @@ void TestInterface::ScanModeChange()
     m_bConnectPC = m_settins->GetParam(CONNPCMODE).toInt();
 }
 
-/********************************************************
- *@Name:        TestCardInfoChange
- *@Author:      HuaT
- *@Description: 测试试剂卡是否显示操作
- *@Param1:      无
- *@Return:      无
- *@Version:     1.0
- *@Date:        2019-6-17
-********************************************************/
-void TestInterface::TestCardInfoChange()
-{
-    int nRet = m_settins->GetParam(TESTCARDMODE).toInt();
-    if(0 == nRet){
-        m_mapIDCardInfo.clear();
-        UpdateIDCardInfo(0,0,"无");
-        UpdateIDCardInfo(1,0,"无");
-        UpdateIDCardInfo(2,0,"无");
-        UpdateIDCardInfo(3,0,"无");
-        InitValidTestItem();
-    }else{
-        SimulationIDCardCast();
-        InitValidTestItem();
-    }
-}
-
 /*
  *新建测试响应事件
  */
@@ -1789,12 +1736,12 @@ void TestInterface::on_pb_Test_StartTest_clicked()
     PacketTestInfoToQueue(m_listSampleInfo);
     //开始日志
     QString strContent = "---" + QString(STARTTEST).arg(ui->lb_Test_SampleCount->text().toInt()) + "---";
-    ShowLogText(ui->textBrowser,strContent,LOGNOTE2);
+    ShowLogText(ui->textBrowser,strContent,MAGENTA);
     if(m_bAddSampleStatus != true && m_bCheckStatus != true){
         //生成日志内容
         if(!m_listSampleInfo.isEmpty()){
             QString strLog = QString(RUNADDSAMPLE).arg(m_listSampleInfo.front().m_nSamplePos);
-            ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
+            ShowLogText(ui->textBrowser,strLog,GREED);
         }
         byarrTestNumbleData = GetWaitAddSampleInfoToQueue();
         //byarrTestNumbleData = PacketTestInfoToByarr(m_vecSampleInfo);
@@ -1842,20 +1789,6 @@ QByteArray TestInterface::GetWaitCheckInfoToQueue(){
     return byarrTestData;
 }
 
-/********************************************************
- *@Name:        GetSampleTypeObj
- *@Author:      HuaT
- *@Description: 从等待加样测试命令中获取一条测试信息返回
- *@Param1:      无
- *@Return:      返回记录的设置界面加样样本类型数据
- *@Version:     1.0
- *@Date:        2019-01-17
-********************************************************/
-QMap<QString, QString> *TestInterface::GetSampleTypeObj()
-{
-    return &m_mapSampleType;
-}
-
 
 /********************************************************
  *@Name:        PacketTestInfoToQueue
@@ -1871,7 +1804,6 @@ void TestInterface::PacketTestInfoToQueue(QList<SampleObj> &listSampleInfo){
     QByteArray byarrTestInfo;
     QString strTestItem;
     QList<SampleObj>::iterator iter;
-    QString strLogSamplePos,strLogSampleName,strLogSampleType,strLogSampleSize,strLogBufferSize;
     for(iter = listSampleInfo.begin(); iter != listSampleInfo.end(); iter++){
         for(int n=0; n<iter->m_listTestItem.size(); n++){
             if( iter->m_listTestItem[n].m_nCurRunStatus == 0 ){
@@ -1920,14 +1852,11 @@ void TestInterface::PacketTestInfoToQueue(QList<SampleObj> &listSampleInfo){
                 quint16 nSampleBloodSize = 0;
                 nSampleBloodSize = static_cast<quint16>( iter->m_listTestItem[n].m_ReagentObj.m_byarrIDCardData.at(43) );
                 //查找配置文件使用的是哪个样本类型
-                //int nType = m_settins->GetParam(BLOODTYPE).toInt();
-                QString strType = m_mapSampleType.value(strTestItem,"0");
-                if(strType.compare("0") == 0){
+                int nType = m_settins->GetParam(BLOODTYPE).toInt();
+                if(nType == 0){
                     nSampleSize = nSampleSerumSize;
-                    strLogSampleType = "血清";
                 }else{
                     nSampleSize = nSampleBloodSize;
-                    strLogSampleType = "全血";
                 }
                 //缓冲液大小
                 quint16 nBufferSize = 0;
@@ -1964,16 +1893,7 @@ void TestInterface::PacketTestInfoToQueue(QList<SampleObj> &listSampleInfo){
                 }
                 byarrTestInfo.append(IntToBytes(nSampleSize));
                 byarrTestInfo.append(IntToBytes(nBufferSize));
-                //qDebug()<<"nSampleSize:"<<nSampleSize<<"nBufferSize:"<<nBufferSize;
-                strLogSamplePos = QString::number(iter->m_nSamplePos);
-                strLogSampleSize = QString::number(nSampleSize);
-                strLogBufferSize = QString::number(nBufferSize);
-                strLogSampleName = strTestItem;
-                QString strLog;
-                strLog = QString("样本位置:"+strLogSamplePos+",测试名称:"+strLogSampleName+",样本类型:"
-                                 +strLogSampleType+",样本量大小:"+strLogSampleSize+",缓冲液大小:"
-                                 +strLogBufferSize+".");
-                ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
+                qDebug()<<"nSampleSize:"<<nSampleSize<<"nBufferSize:"<<nBufferSize;
                 //本项目已经打包
                 iter->m_bIsPacket = true;
                 iter->m_listTestItem[n].m_nCurRunStatus = 1;
@@ -2162,7 +2082,6 @@ void TestInterface::InitScanMode()
     }
 }
 
-
 /********************************************************
  *@Name:        DefaultCircleUI
  *@Author:      HuaT
@@ -2199,6 +2118,8 @@ void TestInterface::DefaultTestCircleUI()
  *@Author:      HuaT
  *@Description: 初始化进度条参数
  *@Param1:      无
+ *@Param2:      无
+ *@Param3:      无
  *@Return:      无
  *@Version:     1.0
  *@Date:        2018-5-21
@@ -2207,19 +2128,19 @@ void TestInterface::InitProgressBar()
 {
     ui->proBar_Test_Reagent1->setStyleSheet("QProgressBar{background-color: #E6E6E6;border: 1px solid grey;border-radius: 1px;}");
     ui->proBar_Test_Reagent1->setFormat("%v");
-    ui->proBar_Test_Reagent1->setRange(0,20);
+    ui->proBar_Test_Reagent1->setRange(0,25);
     UpdateIDCardInfo(0,0,"无");
     ui->proBar_Test_Reagent2->setStyleSheet("QProgressBar{background-color: #E6E6E6;border: 1px solid grey;border-radius: 1px;}");
     ui->proBar_Test_Reagent2->setFormat("%v");
-    ui->proBar_Test_Reagent2->setRange(0,20);
+    ui->proBar_Test_Reagent2->setRange(0,25);
     UpdateIDCardInfo(1,0,"无");
     ui->proBar_Test_Reagent3->setStyleSheet("QProgressBar{background-color: #E6E6E6;border: 1px solid grey;border-radius: 1px;}");
     ui->proBar_Test_Reagent3->setFormat("%v");
-    ui->proBar_Test_Reagent3->setRange(0,20);
+    ui->proBar_Test_Reagent3->setRange(0,25);
     UpdateIDCardInfo(2,0,"无");
     ui->proBar_Test_Reagent4->setStyleSheet("QProgressBar{background-color: #E6E6E6;border: 1px solid grey;border-radius: 1px;}");
     ui->proBar_Test_Reagent4->setFormat("%v");
-    ui->proBar_Test_Reagent4->setRange(0,20);
+    ui->proBar_Test_Reagent4->setRange(0,25);
     UpdateIDCardInfo(3,0,"无");
 }
 
@@ -2228,6 +2149,8 @@ void TestInterface::InitProgressBar()
  *@Author:      HuaT
  *@Description: 初始化列表信息控件
  *@Param1:      无
+ *@Param2:      无
+ *@Param3:      无
  *@Return:      无
  *@Version:     1.0
  *@Date:        2018-5-21
@@ -2365,6 +2288,8 @@ void TestInterface::InitValidTestItem()
  *@Author:      HuaT
  *@Description: 清除列表控件中的内容
  *@Param1:      无
+ *@Param2:      无
+ *@Param3:      无
  *@Return:      无
  *@Version:     1.0
  *@Date:        2018-5-21
@@ -3342,10 +3267,6 @@ void TestInterface::ProceStartLoadSample(const QByteArray &SampleData)
         m_listSampleInfo.at(nSampleIndex).m_listTestItem[nTestIndex].m_timer->setProperty("SamplePos",SamplePos);
         m_listSampleInfo.at(nSampleIndex).m_listTestItem[nTestIndex].m_timer->start(1000);
         m_listSampleInfo[nSampleIndex].m_listTestItem[nTestIndex].m_nCurRunStatus = 2;
-        //日志开始
-        QString strLog;
-        strLog = QString(ADDSAMPLECOMPLETE).arg(SamplePos).arg(TestPos).arg(nRemainTime);
-        ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
     }else{//如果没有加到样
         //
         //m_nCompleteTestCount++;
@@ -3701,10 +3622,6 @@ void TestInterface::ProceCountDownEvent(quint8 nReagentIndex,quint8 nSamplePos)
         //发送命令开始-准备测试
         QByteArray byarrData = IntToBytes(nSamplePos);
         byarrData.append(IntToBytes(nReagentIndex));
-        //日志输出
-        QString strLog;
-        strLog = QString(RUNCHECKING).arg(nSamplePos);
-        ShowLogText(ui->textBrowser,strLog,LOGNORMAL);
         //准备测试
         if(m_bAddSampleStatus == true || m_bCheckStatus == true){
             //插入等待队列
@@ -3800,24 +3717,23 @@ void TestInterface::ShowLogText(QTextBrowser *tb, QString strContent, int ColorT
         tb->append(QString("缓存数量大于%1,已清除缓存").arg(nMaxShowCount));
     }
     switch (ColorType) {
-    case LOGNOTE1:
-        //GRAY
+    case GRAY:
         tb->setTextColor(QColor(128,128,128));
         break;
-    case LOGNORMAL:
-        //GREED
+    case GREED:
+        //Normal
         tb->setTextColor(QColor(28,188,126));
         break;
-    case LOGERROR:
-        //RED
+    case RED:
+        //error
         tb->setTextColor(QColor(255,90,90));
         break;
-    case LOGWARNING:
-        //YELLOW
+    case YELLOW:
+        //wraning
         tb->setTextColor(QColor(255,185,15));
         break;
-    case LOGNOTE2:
-        //MAGENTA,start,end
+    case MAGENTA:
+        //start,end
         tb->setTextColor(QColor(255,0,255));
         break;
     default:

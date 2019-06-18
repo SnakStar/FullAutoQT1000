@@ -2,16 +2,14 @@
 #define PARAMDEF_H
 
 #define SCANMODE  "GeneralSet/ScanMode"
-//0血清，1全血
-//#define BLOODTYPE "GeneralSet/BloodType"
+#define BLOODTYPE "GeneralSet/BloodType"
 
 //调试界面-仪器调试参数设置
-#define DEBUGMODE        "DebugParamSet/DebugMode"
-#define CONNPCMODE       "DebugParamSet/ConnPCMode"
-#define TESTCARDMODE     "DebugParamSet/TestCardMode"
+#define DEBUGMODE   "DebugParamSet/DebugMode"
+#define CONNPCMODE  "DebugParamSet/ConnPCMode"
 
-#define DILUENT          "DebugParamSet/Diluent"
-#define SAMPLESIZE       "DebugParamSet/SampleSize"
+#define DILUENT     "DebugParamSet/Diluent"
+#define SAMPLESIZE  "DebugParamSet/SampleSize"
 
 #define DEBUGSCANSTART   "DebugParamSet/ScanStart"
 #define DEBUGCALCMETHOD  "DebugParamSet/CalcMethod"

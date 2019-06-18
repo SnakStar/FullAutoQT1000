@@ -34,7 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //开机调试模式自动关闭
     m_settings->SetParam(DEBUGMODE,"0");
     m_settings->SetParam(CONNPCMODE,"0");
-    m_settings->SetParam(TESTCARDMODE,"0");
     //打印串口初始化
     InitPrintSerial();
     connect(&m_SerialPrint,SIGNAL(readyRead()), this, SLOT(RecvPrintSerialData()));
@@ -321,10 +320,9 @@ void MainWindow::InitMainInterface()
 void MainWindow::InitSettinsParam()
 {
     m_mapSetParam.insert(SCANMODE,"0");
-    //m_mapSetParam.insert(BLOODTYPE,"0");
+    m_mapSetParam.insert(BLOODTYPE,"0");
     m_mapSetParam.insert(DEBUGMODE,"0");
     m_mapSetParam.insert(CONNPCMODE,"0");
-    m_mapSetParam.insert(TESTCARDMODE,"0");
     m_mapSetParam.insert(DEBUGAMPPARAM,"0");
     m_mapSetParam.insert(DEBUGSCANSTART,"0");
     m_mapSetParam.insert(SAMPLESIZE,"0");
