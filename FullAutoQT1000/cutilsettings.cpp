@@ -244,6 +244,11 @@ void CUtilSettings::emitSettingChange()
     emit SettingChange();
 }
 
+void CUtilSettings::emitSettingDebugCardChange()
+{
+    emit SettingDebugCardChange();
+}
+
 /********************************************************
  *@Name:        Utf8ToGbk
  *@Author:      HuaT

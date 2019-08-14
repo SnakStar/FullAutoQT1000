@@ -633,7 +633,7 @@ void debugIntefaceDlg::on_pb_Param_SaveParam_clicked()
     m_pSettinsObj->SetParam(DEBUGCALCMETHOD,ui->le_Param_CalcMethod->text());
     m_pSettinsObj->SetParam(DEBUGAMPPARAM,ui->le_Param_Amp->text());
     m_pSettinsObj->SetParam(DEBUGTESTTIME,ui->le_Param_TestTime->text());
-
+    emit m_pSettinsObj->emitSettingChange();
     m_pSettinsObj->SaveAllSettingsInfoToFile();
     QMessageBox::information(this,"提示","保存成功",QMessageBox::Ok);
 }
@@ -646,7 +646,7 @@ void debugIntefaceDlg::on_rb_Param_CardClose_clicked()
         m_pSettinsObj->SetParam(TESTCARDMODE,"1");
     }
     m_pSettinsObj->SaveAllSettingsInfoToFile();
-    emit m_pSettinsObj->emitSettingChange();
+    emit m_pSettinsObj->emitSettingDebugCardChange();
 }
 
 void debugIntefaceDlg::on_rb_Param_CardOpen_clicked()
@@ -657,7 +657,7 @@ void debugIntefaceDlg::on_rb_Param_CardOpen_clicked()
         m_pSettinsObj->SetParam(TESTCARDMODE,"1");
     }
     m_pSettinsObj->SaveAllSettingsInfoToFile();
-    emit m_pSettinsObj->emitSettingChange();
+    emit m_pSettinsObj->emitSettingDebugCardChange();
 }
 
 void debugIntefaceDlg::on_pb_Normal_SaveParam_clicked()

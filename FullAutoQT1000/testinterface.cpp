@@ -86,7 +86,7 @@ TestInterface::TestInterface(QWidget *parent) :
     //连接设置界面扫码槽
     connect(m_settins,SIGNAL(SettingChange()),this,SLOT(ScanModeChange()) );
     //连接设置界面测试试剂卡信息
-    connect(m_settins,SIGNAL(SettingChange()),this,SLOT( TestCardInfoChange() ) );
+    connect(m_settins,SIGNAL(SettingDebugCardChange()),this,SLOT( TestCardInfoChange() ) );
     m_TimerWaitResult = new QTimer;
     //
     connect(m_TimerWaitResult,SIGNAL(timeout()), this, SLOT(ProcWaitResultOpt()));
@@ -1782,7 +1782,7 @@ void TestInterface::ParseRequestDialPostion(const QByteArray &AckData)
             byarrdata.append(IntToBytes(nCurDialPos));
             SendSerialData(m_ControlPanelsSerial,PL_FUN_AM_ID_REQUEST_REAGENTPOS_COMPLETE,byarrdata);
             //
-            QString str = QString(REQUESTPOSITION).arg(nSamplePos+1).arg(nReagentPos+1);
+            QString str = QString(REQUESTPOSITION).arg(nSamplePos+1).arg(nCurDialPos+1);
             ShowLogText(ui->tb_Test_RunInfoShow,str,LOGNORMAL);
             break;
         }

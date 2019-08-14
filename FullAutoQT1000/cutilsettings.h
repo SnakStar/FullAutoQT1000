@@ -80,9 +80,11 @@ public:
     QString GetResultFlag(QString strRenf, QString strResult);
     void emitPrintSettingChange();
     void emitSettingChange();
+    void emitSettingDebugCardChange();
 signals:
     void PrintSettingChange();
     void SettingChange();
+    void SettingDebugCardChange();
     
 public slots:
     
