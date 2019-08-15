@@ -1489,12 +1489,7 @@ void TestInterface::RecvCheckPanelsData()
                     //当前卸卡完成
                     QString strLog;
                     strLog = QString(EXITCARDCOMPLETE).arg(nCardNum+1);
-                    for(int n=0; n<m_listReagentPos.size(); n++){
-                        if(m_listReagentPos.at(n)>nCardNum){
-                            m_listReagentPos.insert(n,nCardNum);
-                            break;
-                        }
-                    }
+                    m_listReagentPos.insert(nCardNum,nCardNum);
                     ShowLogText(ui->tb_Test_RunInfoShow,strLog,LOGNORMAL);
                     //卸卡完成,检测是否还有测试等待完成，没有则本轮测试完成
                     bool bComplete = CheckTestComplete();
@@ -3062,6 +3057,7 @@ void TestInterface::DebugOutput(quint16 nFuncIndex, QByteArray byarrContentData,
     strResult = strResult + QString(" m_FuncIndex: %1 /").arg(nFuncIndex);
     strResult = strResult + QString(" m_DataLength: %1 /").arg(byarrContentData.size()/4);
     strResult = strResult + QString(" m_Data: %1 ").arg( QString(byarrContentData.toHex().toUpper()) );
+    strResult = strResult + __FUNCTION__;
     qDebug()<<strResult;
 }
 

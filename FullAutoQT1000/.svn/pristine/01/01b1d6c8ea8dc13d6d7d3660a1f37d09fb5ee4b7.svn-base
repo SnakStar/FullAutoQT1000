@@ -1,0 +1,93 @@
+﻿/*******************************************************************
+ *  Copyright(c) 2000-2020 Company Name
+ *  All rights reserved.
+ *
+ *  文件名称: CUtilSettings.h
+ *  简要描述: 配置文件类头文件，实现对INI文件的增加、读取和修改
+ *
+ *  创建日期: 2016-6-5
+ *  作者: HuaT
+ *  说明:
+ *
+ *  修改日期:
+ *  作者:
+ *  说明:
+ ******************************************************************/
+#ifndef CUTILSETTINGS_H
+#define CUTILSETTINGS_H
+
+#include<QObject>
+#include<QSettings>
+#include<QDebug>
+#include<QFile>
+#include<QMap>
+#include<QDir>
+#include<QTextCodec>
+//#include"qextserial/qextserialport.h"
+
+class CUtilSettings : public QObject
+{
+    Q_OBJECT
+public:
+    explicit CUtilSettings(QObject *parent = 0);
+    CUtilSettings(const QMap<QString,QString> map, QString strInitPath);
+    CUtilSettings(const QList<QString> list, QString strInitPath);
+private:
+    //配置文件路径
+    QString m_IniFilePath;
+    //当前程序路径
+	QString m_CurrentPath;
+    //配置文件参数表
+    QMap<QString,QString> m_mapParam;
+public:
+    //读配置文件
+    QVariant ReadSettings(const QString& key, const QVariant& defaultValue=QVariant());
+    //写配置文件
+    void SaveSettingsInfo(const QString &key, const QVariant &value);
+    //默认配置文件
+    void DefaultSettings();
+    //获取配置文件路径
+    QString GetIniFilePath();
+    //检测配置文件是否存在
+    bool CheckFileExist();
+    //读取配置信息到参数表中
+    QMap<QString,QString> ReadSettingsInfoToMap();
+    //把参数表中的信息写入到配置信息文件中
+    void SaveAllSettingsInfoToFile();
+    //获取配置文件参数表
+    QMap<QString, QString> *GetSettingsMap();
+    //设置配置文件参数表内容
+    void SetParam(const QString& key, const QString& value);
+    //获取配置文件参数表内容
+    QString GetParam(const QString& key);
+    //删除配置文件参数表内容
+    void DelParam(const QString key);
+    //设置配置文件保存路径
+    void SetIniFilePath(QString strPath);
+    //字节编码转换
+    QByteArray Utf8ToGbk(QString str);
+
+
+    //处理上下限的值，返回需要的格式
+    QString ProcValue(QString lower,QString upper);
+    //解析传入的结果值，处理成上下限的格式，at(0)为下限，at(1)为上限
+    QStringList ParseValue(QString value);
+    //分离结果和单位
+    QStringList ParseTestUnit(QString strResult);
+    //获取参考值
+    QString GetRenfValue(QString strAge, QStringList listRenfValue);
+    //获取结果标志
+    QString GetResultFlag(QString strRenf, QString strResult);
+    void emitPrintSettingChange();
+    void emitSettingChange();
+    void emitSettingDebugCardChange();
+signals:
+    void PrintSettingChange();
+    void SettingChange();
+    void SettingDebugCardChange();
+    
+public slots:
+    
+};
+
+#endif // CUTILSETTINGS_H
