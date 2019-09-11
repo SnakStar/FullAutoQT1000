@@ -1,11 +1,14 @@
 <RCC>
     <qresource prefix="/">
-        <file>res/image/background.png</file>
-        <file>res/image/Title.png</file>
         <file>res/qss/style.qss</file>
-        <file>res/image/QC.png</file>
-        <file>res/image/Query.png</file>
-        <file>res/image/Setting.png</file>
-        <file>res/image/Test.png</file>
+        <file>res/image/Login/LoginBackground.png</file>
+        <file>res/image/Login/LoginDropdown.png</file>
+        <file>res/image/Login/LoginPassword.png</file>
+        <file>res/image/Login/LoginPoweroff.png</file>
+        <file>res/image/Login/LoginPoweroff-hover.png</file>
+        <file>res/image/Login/LoginPoweroff-pressed.png</file>
+        <file>res/image/Login/LoginUser.png</file>
+        <file>res/qss/LoginStyle.qss</file>
+        <file>res/image/background.png</file>
     </qresource>
 </RCC>

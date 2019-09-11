@@ -2,6 +2,9 @@
 #define LOGINDLG_H
 
 #include <QWidget>
+#include <QFile>
+#include <QTextStream>
+#include <QListView>
 #include "cqtprodb.h"
 
 

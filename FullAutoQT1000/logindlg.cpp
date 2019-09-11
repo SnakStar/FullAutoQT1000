@@ -16,6 +16,18 @@ LoginDlg::LoginDlg(CQtProDB *db, QWidget *parent) :
     InitUserList();
     //隐藏提示
     ui->lb_Login_Note->hide();
+    ui->comboBox->setView(new  QListView());
+    this->setAutoFillBackground(true);
+    QPalette palette;
+    QPixmap pixmap(":/res/image/Login/LoginBackground.png");
+    palette.setBrush(QPalette::Window,QBrush(pixmap.scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)));
+    this->setPalette(palette);
+    QFile fi(":/res/qss/LoginStyle.qss");
+    if(fi.open(QIODevice::ReadOnly)){
+        QTextStream ts(&fi);
+        QString strStyle = ts.readAll();
+        this->setStyleSheet(strStyle);
+    }
 }
 
 LoginDlg::~LoginDlg()

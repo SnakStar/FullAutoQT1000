@@ -19,46 +19,52 @@
   <widget class="QLabel" name="lb_Login_User">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>320</y>
-     <width>72</width>
-     <height>15</height>
+     <x>330</x>
+     <y>280</y>
+     <width>48</width>
+     <height>48</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="text">
-    <string>用户名:</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="lb_Login_Pwd">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>406</y>
-     <width>72</width>
-     <height>15</height>
+     <x>330</x>
+     <y>340</y>
+     <width>48</width>
+     <height>48</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="text">
-    <string>密码:</string>
+    <string/>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBox">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>310</y>
-     <width>211</width>
-     <height>31</height>
+     <x>390</x>
+     <y>285</y>
+     <width>260</width>
+     <height>40</height>
     </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="pb_Login_Ok">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>500</y>
-     <width>101</width>
-     <height>41</height>
+     <x>438</x>
+     <y>410</y>
+     <width>150</width>
+     <height>55</height>
     </rect>
    </property>
    <property name="text">
@@ -68,10 +74,10 @@
   <widget class="QLineEdit" name="le_Login_Pwd">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>390</y>
-     <width>211</width>
-     <height>31</height>
+     <x>390</x>
+     <y>345</y>
+     <width>260</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="focusPolicy">
@@ -81,21 +87,21 @@
   <widget class="QPushButton" name="pb_Login_Poweroff">
    <property name="geometry">
     <rect>
-     <x>580</x>
-     <y>500</y>
-     <width>101</width>
-     <height>41</height>
+     <x>930</x>
+     <y>690</y>
+     <width>64</width>
+     <height>64</height>
     </rect>
    </property>
    <property name="text">
-    <string>关机</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="lb_Login_Note">
    <property name="geometry">
     <rect>
-     <x>631</x>
-     <y>399</y>
+     <x>660</x>
+     <y>355</y>
      <width>271</width>
      <height>21</height>
     </rect>
@@ -105,6 +111,35 @@
    </property>
    <property name="text">
     <string>密码输入有误,请重新输入</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_Login_Company">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>730</y>
+     <width>221</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>广州阳普医疗科技股份有限公司</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_Login_Title">
+   <property name="geometry">
+    <rect>
+     <x>303</x>
+     <y>197</y>
+     <width>451</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>全自动荧光免疫分析仪</string>
    </property>
   </widget>
  </widget>
