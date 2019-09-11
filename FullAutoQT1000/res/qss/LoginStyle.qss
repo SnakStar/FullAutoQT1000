@@ -1,0 +1,84 @@
+﻿
+QLabel#lb_Login_Title{
+    font-size: 40px;
+    color:rgb(44, 158, 247);
+}
+
+QLabel{
+    color:rgb(44,158,247);
+}
+
+QLabel#lb_Login_User{
+    border-image:url(":/res/image/Login/LoginUser.png");
+}
+
+QLabel#lb_Login_Pwd{
+    border-image:url(":/res/image/Login/LoginPassword.png");
+}
+
+QLineEdit{
+    border:2px solid rgb( 65, 199, 214 );
+    border-radius: 8px;
+}
+
+QLineEdit:focus{
+    border-color:rgb( 59, 119, 227);
+}
+
+QWidget#LoginDlg{
+    border-image:url(:/res/image/Login/LoginBackground.png);
+}
+
+QPushButton#pb_Login_Ok{
+    background-color:rgb(44, 158, 247);
+    border-radius: 24px;
+    color: white;
+    font-size: 28px;
+}
+
+QPushButton:hover#pb_Login_Ok{
+    background-color:rgb(146, 191, 252);
+}
+
+QPushButton:pressed#pb_Login_Ok{
+    background-color:rgb(40, 87, 189);
+}
+
+QPushButton#pb_Login_Poweroff{
+    border-image: url(:/res/image/Login/LoginPoweroff.png);
+}
+
+QPushButton:hover#pb_Login_Poweroff{
+    border-image:url(":/res/image/Login/LoginPoweroff-hover.png");
+}
+
+QPushButton:Pressed#pb_Login_Poweroff{
+    border-image:url(":/res/image/Login/LoginPoweroff-pressed.png");
+}
+
+QComboBox{
+    border:2px solid rgb(65, 199, 214);
+    border-radius: 4px;
+}
+
+QComboBox:down-arrow{
+    border-image:url(":/res/image/Login/LoginDropdown.png");
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 30px;
+    border-left-width: 1px;
+    border-left-color: rgb(65, 199, 214);
+    border-left-style: solid; /* just a single line */
+    border-top-right-radius: 3px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 3px;
+}
+
+QComboBox QAbstractItemView::item {
+    height: 35px;
+    color:black;
+}
+
+

@@ -10,5 +10,14 @@
         <file>res/image/Login/LoginUser.png</file>
         <file>res/qss/LoginStyle.qss</file>
         <file>res/image/background.png</file>
+        <file>res/qss/MainStyle.qss</file>
+        <file>res/image/Main/MainTest.png</file>
+        <file>res/image/Main/MainTest-White.png</file>
+        <file>res/image/Main/MainQC.png</file>
+        <file>res/image/Main/MainQC-White.png</file>
+        <file>res/image/Main/MainQuery.png</file>
+        <file>res/image/Main/MainQuery-White.png</file>
+        <file>res/image/Main/MainSetting.png</file>
+        <file>res/image/Main/MainSetting-White.png</file>
     </qresource>
 </RCC>

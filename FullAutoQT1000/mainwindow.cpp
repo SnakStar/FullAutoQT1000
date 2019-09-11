@@ -56,6 +56,12 @@ MainWindow::MainWindow(QWidget *parent) :
         m_LoginDlg->move(this->pos().x(),this->pos().y());
         connect(m_LoginDlg,SIGNAL(loginSendShutodwnDev()), m_TestInterface, SLOT( RecvShutdownOprt()) );
     }
+    QFile fi(":/res/qss/MainStyle.qss");
+    if(fi.open(QIODevice::ReadOnly)){
+        QTextStream ts(&fi);
+        QString strStyle = ts.readAll();
+        this->setStyleSheet(strStyle);
+    }
 }
 
 
@@ -310,9 +316,17 @@ void MainWindow::InitMainInterface()
 
     ui->stackedWidget->setCurrentIndex(0);
     ui->pb_Main_Test->setChecked(true);
+    ui->pb_Main_Test->setIcon(QIcon(":/res/image/Main/MainTest-White.png"));
+    ui->pb_Main_Test->setIconSize(QSize(32,32));
     ui->pb_Main_Query->setChecked(false);
+    ui->pb_Main_Query->setIcon(QIcon(":/res/image/Main/MainQuery.png"));
+    ui->pb_Main_Query->setIconSize(QSize(32,32));
     ui->pb_Main_QC->setChecked(false);
+    ui->pb_Main_QC->setIcon(QIcon(":/res/image/Main/MainQC.png"));
+    ui->pb_Main_QC->setIconSize(QSize(32,32));
     ui->pb_Main_Setting->setChecked(false);
+    ui->pb_Main_Setting->setIcon(QIcon(":/res/image/Main/MainSetting.png"));
+    ui->pb_Main_Setting->setIconSize(QSize(32,32));
 }
 
 /********************************************************
@@ -398,9 +412,13 @@ void MainWindow::on_pb_Main_Test_clicked()
     ui->stackedWidget->setCurrentWidget(m_TestInterface);
 
     ui->pb_Main_Test->setChecked(true);
+    ui->pb_Main_Test->setIcon(QIcon(":/res/image/Main/MainTest-White.png"));
     ui->pb_Main_Query->setChecked(false);
+    ui->pb_Main_Query->setIcon(QIcon(":/res/image/Main/MainQuery.png"));
     ui->pb_Main_QC->setChecked(false);
+    ui->pb_Main_QC->setIcon(QIcon(":/res/image/Main/MainQC.png"));
     ui->pb_Main_Setting->setChecked(false);
+    ui->pb_Main_Setting->setIcon(QIcon(":/res/image/Main/MainSetting.png"));
 }
 
 /*
@@ -411,9 +429,13 @@ void MainWindow::on_pb_Main_Query_clicked()
     ui->stackedWidget->setCurrentWidget(m_QueryInterface);
 
     ui->pb_Main_Test->setChecked(false);
+    ui->pb_Main_Test->setIcon(QIcon(":/res/image/Main/MainTest.png"));
     ui->pb_Main_Query->setChecked(true);
+    ui->pb_Main_Query->setIcon(QIcon(":/res/image/Main/MainQuery-White.png"));
     ui->pb_Main_QC->setChecked(false);
+    ui->pb_Main_QC->setIcon(QIcon(":/res/image/Main/MainQC.png"));
     ui->pb_Main_Setting->setChecked(false);
+    ui->pb_Main_Setting->setIcon(QIcon(":/res/image/Main/MainSetting.png"));
 }
 
 /*
@@ -422,9 +444,13 @@ void MainWindow::on_pb_Main_Query_clicked()
 void MainWindow::on_pb_Main_QC_clicked()
 {
     ui->pb_Main_Test->setChecked(false);
+    ui->pb_Main_Test->setIcon(QIcon(":/res/image/Main/MainTest.png"));
     ui->pb_Main_Query->setChecked(false);
+    ui->pb_Main_Query->setIcon(QIcon(":/res/image/Main/MainQuery.png"));
     ui->pb_Main_QC->setChecked(true);
+    ui->pb_Main_QC->setIcon(QIcon(":/res/image/Main/MainQC-White.png"));
     ui->pb_Main_Setting->setChecked(false);
+    ui->pb_Main_Setting->setIcon(QIcon(":/res/image/Main/MainSetting.png"));
     ui->stackedWidget->setCurrentIndex(2);
 }
 
@@ -434,9 +460,13 @@ void MainWindow::on_pb_Main_QC_clicked()
 void MainWindow::on_pb_Main_Setting_clicked()
 {
     ui->pb_Main_Test->setChecked(false);
+    ui->pb_Main_Test->setIcon(QIcon(":/res/image/Main/MainTest.png"));
     ui->pb_Main_Query->setChecked(false);
+    ui->pb_Main_Query->setIcon(QIcon(":/res/image/Main/MainQuery.png"));
     ui->pb_Main_QC->setChecked(false);
+    ui->pb_Main_QC->setIcon(QIcon(":/res/image/Main/MainQC.png"));
     ui->pb_Main_Setting->setChecked(true);
+    ui->pb_Main_Setting->setIcon(QIcon(":/res/image/Main/MainSetting-White.png"));
     ui->stackedWidget->setCurrentIndex(3);
     m_SetInterface->UpdateDbToRenf();
 }

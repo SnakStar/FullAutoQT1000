@@ -21,6 +21,8 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QProcess>
+#include <QFile>
+#include <QTextStream>
 #include"testinterface.h"
 #include"queryinterface.h"
 #include"qcinterface.h"

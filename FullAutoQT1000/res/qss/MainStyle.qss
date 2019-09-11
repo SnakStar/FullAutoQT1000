@@ -1,0 +1,33 @@
+﻿QPushButton#pb_Main_Test,#pb_Main_QC,#pb_Main_Query,#pb_Main_Setting{
+    background-color:white;
+    qproperty-iconSize: 32px 32px;
+    font-size: 18px;
+    border: 0px solid gray;
+    border-radius: 0px;
+    border-style:outset;
+}
+
+QPushButton#pb_Main_Test::checked,#pb_Main_QC::checked,#pb_Main_Query::checked,#pb_Main_Setting::checked{
+    background-color:rgb(60,183,198);
+    border: 0px solid gray;
+    border-radius: 0px;
+    border-style:outset;
+    color:white;
+}
+
+
+QPushButton#pb_Main_PowerOff{
+    border-image: url(:/res/image/Login/LoginPoweroff-hover.png);
+}
+
+QPushButton:hover#pb_Main_PowerOff{
+    border-image:url(":/res/image/Login/LoginPoweroff-hover.png");
+}
+
+QPushButton:Pressed#pb_Main_PowerOff{
+    border-image:url(":/res/image/Login/LoginPoweroff-pressed.png");
+}
+
+QLabel#lb_Main_SystemTime{
+    color:rgb(60,183,198);
+}

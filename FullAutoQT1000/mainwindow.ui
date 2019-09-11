@@ -26,7 +26,7 @@
       <x>0</x>
       <y>0</y>
       <width>1021</width>
-      <height>41</height>
+      <height>30</height>
      </rect>
     </property>
     <property name="title">
@@ -49,10 +49,10 @@
    <widget class="QPushButton" name="pb_Main_Test">
     <property name="geometry">
      <rect>
-      <x>657</x>
-      <y>41</y>
-      <width>93</width>
-      <height>51</height>
+      <x>580</x>
+      <y>29</y>
+      <width>110</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
@@ -68,10 +68,10 @@
    <widget class="QPushButton" name="pb_Main_Query">
     <property name="geometry">
      <rect>
-      <x>748</x>
-      <y>41</y>
-      <width>93</width>
-      <height>51</height>
+      <x>690</x>
+      <y>29</y>
+      <width>110</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
@@ -84,10 +84,10 @@
    <widget class="QPushButton" name="pb_Main_QC">
     <property name="geometry">
      <rect>
-      <x>839</x>
-      <y>41</y>
-      <width>93</width>
-      <height>51</height>
+      <x>800</x>
+      <y>29</y>
+      <width>110</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
@@ -100,10 +100,10 @@
    <widget class="QPushButton" name="pb_Main_Setting">
     <property name="geometry">
      <rect>
-      <x>930</x>
-      <y>41</y>
-      <width>93</width>
-      <height>51</height>
+      <x>910</x>
+      <y>29</y>
+      <width>110</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
@@ -142,29 +142,96 @@
    <widget class="QLabel" name="lb_Main_NoteTitle">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>50</y>
-      <width>181</width>
+      <x>420</x>
+      <y>10</y>
+      <width>161</width>
       <height>21</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(251, 144, 29);</string>
+    </property>
     <property name="text">
-     <string>自检中，请耐心等待...</string>
+     <string>自检中，请耐心等待</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pb_Main_PowerOff">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>40</y>
-      <width>93</width>
-      <height>51</height>
+      <x>200</x>
+      <y>29</y>
+      <width>64</width>
+      <height>64</height>
      </rect>
     </property>
     <property name="text">
-     <string>关机</string>
+     <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>30</y>
+      <width>201</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(60, 183, 198);
+font: 32pt &quot;Adobe Arabic&quot;;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>30</y>
+      <width>201</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;
+color:white;</string>
+    </property>
+    <property name="text">
+     <string>Improve</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>70</y>
+      <width>161</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white;</string>
+    </property>
+    <property name="text">
+     <string>全自动免疫荧光分析仪</string>
+    </property>
+   </widget>
+   <zorder>pb_Main_Test</zorder>
+   <zorder>pb_Main_Query</zorder>
+   <zorder>pb_Main_QC</zorder>
+   <zorder>pb_Main_Setting</zorder>
+   <zorder>lb_Main_NoteTitle</zorder>
+   <zorder>pb_Main_PowerOff</zorder>
+   <zorder>label</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_3</zorder>
+   <zorder>groupBox_MainStatusBar</zorder>
+   <zorder>groupBox_MainBorder</zorder>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
