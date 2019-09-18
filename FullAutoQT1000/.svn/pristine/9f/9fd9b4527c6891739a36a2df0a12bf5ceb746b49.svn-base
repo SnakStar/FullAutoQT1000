@@ -16,14 +16,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <widget class="QLabel" name="lb_Login_User">
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>320</y>
+     <y>280</y>
      <width>48</width>
      <height>48</height>
     </rect>
@@ -39,7 +36,7 @@
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>400</y>
+     <y>340</y>
      <width>48</width>
      <height>48</height>
     </rect>
@@ -55,7 +52,7 @@
    <property name="geometry">
     <rect>
      <x>390</x>
-     <y>325</y>
+     <y>285</y>
      <width>260</width>
      <height>40</height>
     </rect>
@@ -65,7 +62,7 @@
    <property name="geometry">
     <rect>
      <x>438</x>
-     <y>500</y>
+     <y>410</y>
      <width>150</width>
      <height>55</height>
     </rect>
@@ -78,7 +75,7 @@
    <property name="geometry">
     <rect>
      <x>390</x>
-     <y>405</y>
+     <y>345</y>
      <width>260</width>
      <height>40</height>
     </rect>
@@ -104,7 +101,7 @@
    <property name="geometry">
     <rect>
      <x>660</x>
-     <y>415</y>
+     <y>355</y>
      <width>271</width>
      <height>21</height>
     </rect>
@@ -130,6 +127,19 @@
    </property>
    <property name="text">
     <string>广州阳普医疗科技股份有限公司</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lb_Login_Title">
+   <property name="geometry">
+    <rect>
+     <x>303</x>
+     <y>197</y>
+     <width>451</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>全自动荧光免疫分析仪</string>
    </property>
   </widget>
  </widget>

@@ -456,7 +456,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>V1.0.43.0</string>
+      <string>V1.0.42.0</string>
      </property>
     </widget>
     <widget class="QPushButton" name="btn_Set_Poweroff">

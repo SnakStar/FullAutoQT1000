@@ -1,4 +1,8 @@
 ﻿
+QLabel#lb_Login_Title{
+    font-size: 40px;
+    color:rgb(44, 158, 247);
+}
 
 QLabel{
     color:rgb(44,158,247);
@@ -45,7 +49,7 @@ QPushButton#pb_Login_Poweroff{
 }
 
 QPushButton:hover#pb_Login_Poweroff{
-    border-image:url(":/res/image/Login/LoginPoweroff-pressed.png");
+    border-image:url(":/res/image/Login/LoginPoweroff-hover.png");
 }
 
 QPushButton:Pressed#pb_Login_Poweroff{

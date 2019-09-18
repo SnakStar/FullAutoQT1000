@@ -1,8 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>res/qss/style.qss</file>
+        <file>res/image/Login/LoginBackground.png</file>
         <file>res/image/Login/LoginDropdown.png</file>
         <file>res/image/Login/LoginPassword.png</file>
+        <file>res/image/Login/LoginPoweroff.png</file>
+        <file>res/image/Login/LoginPoweroff-hover.png</file>
+        <file>res/image/Login/LoginPoweroff-pressed.png</file>
         <file>res/image/Login/LoginUser.png</file>
         <file>res/qss/LoginStyle.qss</file>
         <file>res/image/background.png</file>
@@ -15,9 +19,5 @@
         <file>res/image/Main/MainQuery-White.png</file>
         <file>res/image/Main/MainSetting.png</file>
         <file>res/image/Main/MainSetting-White.png</file>
-        <file>res/image/Login/LoginPoweroff.png</file>
-        <file>res/image/Login/LoginPoweroff-pressed.png</file>
-        <file>res/image/Login/LoginBackground.png</file>
-        <file>res/qss/TestStyle.qss</file>
     </qresource>
 </RCC>

@@ -23,9 +23,9 @@
    <widget class="QGroupBox" name="groupBox_MainStatusBar">
     <property name="geometry">
      <rect>
-      <x>-10</x>
+      <x>0</x>
       <y>0</y>
-      <width>1041</width>
+      <width>1021</width>
       <height>30</height>
      </rect>
     </property>
@@ -129,9 +129,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>5</y>
+       <y>10</y>
        <width>1021</width>
-       <height>681</height>
+       <height>671</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -158,7 +158,7 @@
    <widget class="QPushButton" name="pb_Main_PowerOff">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>200</x>
       <y>29</y>
       <width>64</width>
       <height>64</height>
@@ -168,13 +168,69 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>30</y>
+      <width>201</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(60, 183, 198);
+font: 32pt &quot;Adobe Arabic&quot;;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>30</y>
+      <width>201</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 28pt &quot;Adobe Arabic&quot;;
+color:white;</string>
+    </property>
+    <property name="text">
+     <string>Improve</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>70</y>
+      <width>161</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white;</string>
+    </property>
+    <property name="text">
+     <string>全自动免疫荧光分析仪</string>
+    </property>
+   </widget>
    <zorder>pb_Main_Test</zorder>
    <zorder>pb_Main_Query</zorder>
    <zorder>pb_Main_QC</zorder>
    <zorder>pb_Main_Setting</zorder>
-   <zorder>pb_Main_PowerOff</zorder>
-   <zorder>groupBox_MainStatusBar</zorder>
    <zorder>lb_Main_NoteTitle</zorder>
+   <zorder>pb_Main_PowerOff</zorder>
+   <zorder>label</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_3</zorder>
+   <zorder>groupBox_MainStatusBar</zorder>
    <zorder>groupBox_MainBorder</zorder>
   </widget>
  </widget>

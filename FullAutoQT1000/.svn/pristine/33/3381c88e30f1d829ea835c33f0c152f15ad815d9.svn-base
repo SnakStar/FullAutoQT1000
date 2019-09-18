@@ -1,0 +1,89 @@
+﻿#include "logindlg.h"
+#include "ui_logindlg.h"
+#include "mainwindow.h"
+
+LoginDlg::LoginDlg(CQtProDB *db, QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::LoginDlg)
+{
+    ui->setupUi(this);
+    m_devDB = db;
+    this->setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowStaysOnTopHint|Qt::SplashScreen);
+    this->setFixedSize(1024,768);
+    ui->le_Login_Pwd->setEchoMode(QLineEdit::Password);
+    ui->le_Login_Pwd->setProperty("flag","number");
+    //初始化下拉用户
+    InitUserList();
+    //隐藏提示
+    ui->lb_Login_Note->hide();
+    ui->comboBox->setView(new  QListView());
+    this->setAutoFillBackground(true);
+    QPalette palette;
+    QPixmap pixmap(":/res/image/Login/LoginBackground.png");
+    palette.setBrush(QPalette::Window,QBrush(pixmap.scaled(this->size(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation)));
+    this->setPalette(palette);
+    QFile fi(":/res/qss/LoginStyle.qss");
+    if(fi.open(QIODevice::ReadOnly)){
+        QTextStream ts(&fi);
+        QString strStyle = ts.readAll();
+        this->setStyleSheet(strStyle);
+    }
+}
+
+LoginDlg::~LoginDlg()
+{
+    delete ui;
+}
+
+void LoginDlg::InitUserList()
+{
+    QStringList strlist;
+    QString strSql;
+    strSql = "select username from userLogin";
+    strlist = m_devDB->ExecQuery(strSql);
+    if(strlist.contains("Admin") == false){
+        strSql = "insert into userLogin(username,password) values('Admin','123456')";
+        bool re = m_devDB->Exec(strSql);
+        if(re == false){
+            ui->lb_Login_Note->setText("数据库插入失败,数据无法读取");
+            ui->lb_Login_Note->show();
+            return;
+        }
+        strlist.insert(0,"Admin");
+    }
+    ui->comboBox->addItems(strlist);
+}
+
+
+void LoginDlg::on_pb_Login_Ok_clicked()
+{
+    QString strUserName = ui->comboBox->currentText();
+    QString strSql = QString("select password from userLogin where username='%1'").arg(strUserName);
+    QStringList strlist = m_devDB->ExecQuery(strSql);
+    if(strlist.size() == 0){
+        ui->lb_Login_Note->setText(QObject::tr("查询失败,请检查系统文件"));
+        ui->lb_Login_Note->show();
+        return;
+    }else{
+        QString strPasswd = ui->le_Login_Pwd->text();
+        QString strDbPasswd = strlist.at(0);
+        if(strPasswd.compare(strDbPasswd) == 0){
+            this->close();
+        }else{
+            ui->lb_Login_Note->setText(QObject::tr("密码输入有误,请重新输入"));
+            ui->lb_Login_Note->show();
+            ui->le_Login_Pwd->clear();
+        }
+    }
+
+}
+
+void LoginDlg::on_pb_Login_Poweroff_clicked()
+{
+    QString strTitle,strContent;
+    strTitle = QObject::tr("警告");
+    strContent = QObject::tr("您确定关闭仪器吗");
+    if(QMessageBox::Yes == QMessageBox::warning(this,strTitle,strContent,QMessageBox::Yes|QMessageBox::No)){
+        emit loginSendShutodwnDev();
+    }
+}

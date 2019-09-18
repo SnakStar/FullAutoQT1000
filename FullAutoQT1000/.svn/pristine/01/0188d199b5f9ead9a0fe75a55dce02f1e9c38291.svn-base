@@ -1,0 +1,37 @@
+﻿#ifndef LOGINDLG_H
+#define LOGINDLG_H
+
+#include <QWidget>
+#include <QFile>
+#include <QTextStream>
+#include <QListView>
+#include "cqtprodb.h"
+
+
+namespace Ui {
+class LoginDlg;
+}
+
+class LoginDlg : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit LoginDlg(CQtProDB* db,QWidget *parent = 0);
+    ~LoginDlg();
+private:
+    void InitUserList();
+
+signals:
+    void loginSendShutodwnDev();
+
+private slots:
+    void on_pb_Login_Ok_clicked();
+    void on_pb_Login_Poweroff_clicked();
+
+private:
+    Ui::LoginDlg *ui;
+    CQtProDB* m_devDB;
+};
+
+#endif // LOGINDLG_H

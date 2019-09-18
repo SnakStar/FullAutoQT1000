@@ -17,11 +17,11 @@ QPushButton#pb_Main_Test::checked,#pb_Main_QC::checked,#pb_Main_Query::checked,#
 
 
 QPushButton#pb_Main_PowerOff{
-    border-image: url(:/res/image/Login/LoginPoweroff-hover.png);
+    border-image: url(:/res/image/Login/LoginPoweroff.png);
 }
 
 QPushButton:hover#pb_Main_PowerOff{
-    border-image:url(":/res/image/Login/LoginPoweroff-hover.png");
+    border-image:url(":/res/image/Login/LoginPoweroff-pressed.png");
 }
 
 QPushButton:Pressed#pb_Main_PowerOff{
@@ -31,3 +31,12 @@ QPushButton:Pressed#pb_Main_PowerOff{
 QLabel#lb_Main_SystemTime{
     color:rgb(60,183,198);
 }
+
+QGroupBox#groupBox_MainStatusBar{
+    border: 1px solid;
+    border-color:rgb(208,208,208);
+    background-color:white;
+    border-radius: 4px;
+    font-size: 24px;
+}
+

@@ -61,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent) :
         QTextStream ts(&fi);
         QString strStyle = ts.readAll();
         this->setStyleSheet(strStyle);
-        fi.close();
     }
 }
 

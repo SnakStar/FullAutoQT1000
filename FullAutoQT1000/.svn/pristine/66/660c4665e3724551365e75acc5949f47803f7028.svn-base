@@ -132,6 +132,19 @@
     <string>广州阳普医疗科技股份有限公司</string>
    </property>
   </widget>
+  <widget class="QLabel" name="lb_Login_Title">
+   <property name="geometry">
+    <rect>
+     <x>303</x>
+     <y>197</y>
+     <width>451</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>全自动荧光免疫分析仪</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
