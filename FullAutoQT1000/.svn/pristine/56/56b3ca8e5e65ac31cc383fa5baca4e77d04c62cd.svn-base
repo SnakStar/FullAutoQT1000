@@ -1,0 +1,67 @@
+﻿QPushButton{
+    background-color:rgb(44,158,247);
+    color:white;
+    border:0px solid;
+    border-radius:4px;
+}
+
+QPushButton:hover{
+    background-color:#92bffc;
+    border:none;
+}
+
+QPushButton:pressed{
+    background-color:#2857ad;
+    padding-left:8px;
+    padding-top:8px;
+}
+
+QListWidget{
+    background-color:rgb(32,82,99);
+    border-color:rgb(32,82,99);
+    color:white;
+}
+
+QListWidget::Item{
+    background-color:rgb(32,82,99);
+    color:white;
+}
+
+QListWidget::Item:selected{
+    background-color:rgb(239,239,241);
+    color:rgb(32,82,99);
+}
+
+QWidget:focus{outline: none;}
+
+QRadioButton::indicator{
+    width:30px;
+    height:30px;
+}
+
+QRadioButton::indicator::unchecked {
+    image: url(:/res/image/Setting/SettingUnCheck.png);
+}
+
+
+QRadioButton::indicator::checked {
+    image: url(:/res/image/Setting/SettingCheck.png);
+}
+
+QGroupBox{
+    border: 0px solid;
+    background-color:white;
+    border-radius: 4px;
+    font-size: 24px;
+}
+
+QGroupBox::title{
+    subcontrol-position: top center;
+    color: rgb(65, 199, 214);
+}
+
+QFrame[frameShape="4"]
+{
+    border: none;
+    background: rgb(204,204,204);
+}
