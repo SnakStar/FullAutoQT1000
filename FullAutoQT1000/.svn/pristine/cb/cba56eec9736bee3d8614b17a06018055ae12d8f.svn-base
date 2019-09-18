@@ -1,0 +1,78 @@
+﻿QGroupBox{
+    border: 0px solid;
+    background-color:white;
+    border-radius: 4px;
+    font-size: 24px;
+}
+
+QGroupBox::title{
+    subcontrol-position: top center;
+    color: rgb(65, 199, 214);
+}
+
+QFrame[frameShape="4"]
+{
+    border: none;
+    background: rgb(204,204,204);
+}
+
+QProgressBar:vertical{
+    border:2px solid;
+    border-color:#878787;
+    background:white;
+    text-align:center;
+    color:rgb(255,255,0);
+    border-radius:6px;
+    padding:4px;
+}
+
+QProgressBar::chunk:vertical{
+    border-radius:1px;
+    background: rgb(0,223,0);
+    height:5px;
+    margin:0px;
+}
+
+QPushButton#pb_Test_NewTest::enabled,#pb_Test_DetailsInfo::enabled,#pb_Test_ScanModel::enabled,#pb_Test_ClearTestName::enabled,#pb_Test_StartTest::enabled,#pb_Test_Back::enabled,#pb_Test_ViewLog::enabled,#pb_Test_InsertEmer:enabled{
+    background-color:rgb(44,158,247);
+    color:white;
+    border:0px solid;
+    border-radius:4px;
+}
+
+QPushButton#pb_Test_NewTest::hover,#pb_Test_DetailsInfo::hover,#pb_Test_ScanModel::hover,#pb_Test_ClearTestName::hover,#pb_Test_StartTest::hover,#pb_Test_Back::hover,#pb_Test_ViewLog::hover,#pb_Test_InsertEmer::hover{
+    background-color:#92bffc;
+    border:none;
+}
+
+QPushButton#pb_Test_NewTest::pressed,#pb_Test_DetailsInfo::pressed,#pb_Test_ScanModel::pressed,#pb_Test_ClearTestName::pressed,#pb_Test_StartTest::pressed,#pb_Test_Back::pressed,#pb_Test_ViewLog::pressed,#pb_Test_InsertEmer::pressed{
+    background-color:#2857ad;
+    padding-left:8px;
+    padding-top:8px;
+}
+
+QPushButton#pb_Test_NewTest::disabled,#pb_Test_DetailsInfo::disabled,#pb_Test_ScanModel::disabled,#pb_Test_ClearTestName::disabled,#pb_Test_StartTest::disabled,#pb_Test_Back::disabled,#pb_Test_ViewLog::disabled,#pb_Test_InsertEmer::disabled{
+    background-color:rgb(211,211,211);
+    border:none;
+}
+
+QPushButton#pb_Test_TestName1,#pb_Test_TestName2,#pb_Test_TestName3,#pb_Test_TestName4,#pb_Test_Zero,#pb_Test_One,#pb_Test_Two,#pb_Test_Three,#pb_Test_Four,#pb_Test_Five,#pb_Test_Six,#pb_Test_Seven,#pb_Test_Eight,#pb_Test_Nine,#pb_Test_Clear,#pb_Test_OK{
+    background-color:white;
+    border:2px solid;
+    border-color: rgb(44,158,247);
+    color:rgb(60,183,198);
+    border-radius:8px;
+}
+
+QPushButton#pb_Test_TestName1:hover,#pb_Test_TestName2:hover,#pb_Test_TestName3:hover,#pb_Test_TestName4:hover,#pb_Test_Zero:hover,#pb_Test_One:hover,#pb_Test_Two:hover,#pb_Test_Three:hover,#pb_Test_Four:hover,#pb_Test_Five:hover,#pb_Test_Six:hover,#pb_Test_Seven:hover,#pb_Test_Eight:hover,#pb_Test_Nine:hover,#pb_Test_Clear:hover,#pb_Test_OK:hover{
+    border-color:#2857ad;
+    border:2px solid;
+    border-color: rgb(44,158,247);
+}
+
+QPushButton#pb_Test_TestName1:pressed,#pb_Test_TestName2:pressed,#pb_Test_TestName3:pressed,#pb_Test_TestName4:pressed,#pb_Test_Zero:pressed,#pb_Test_One:pressed,#pb_Test_Two:pressed,#pb_Test_Three:pressed,#pb_Test_Four:pressed,#pb_Test_Five:pressed,#pb_Test_Six:pressed,#pb_Test_Seven:pressed,#pb_Test_Eight:pressed,#pb_Test_Nine:pressed,#pb_Test_Clear:pressed,#pb_Test_OK:pressed{
+    border-color:#2857ad;
+    padding-left:8px;
+    padding-top:8px;
+}
+
