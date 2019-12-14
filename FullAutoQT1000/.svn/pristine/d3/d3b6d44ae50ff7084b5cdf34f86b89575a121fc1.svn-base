@@ -46,8 +46,6 @@ TestInterface::TestInterface(QWidget *parent) :
     ui->le_Test_SampleCount->setProperty("flag","number");
     ui->le_Test_SampleNumber->setProperty("noinput",true);
     ui->le_Test_StartNumber->setProperty("flag","number");
-    ui->de_Test_LogDate->setProperty("noinput",true);
-    ui->de_Test_LogDate->setDate(QDate::currentDate());
     ui->rb_Test_StartNumberClose->setChecked(true);
     //m_myInputPanel = (static_cast<MainWindow*>(m_pMainWnd) )->GetInputPanelContext();
     //ui->le_Test_SampleCount->installEventFilter(this);
@@ -1671,10 +1669,9 @@ void TestInterface::ProcWaitResultOpt()
 
 void TestInterface::QueryLogFileSize()
 {
-    //QFileInfo fi("/home/root/FullAutoQT/FullAutoLog.txt");
-    QFileInfo fi(m_LogView.GetFilePath());
+    QFileInfo fi("/home/root/FullAutoQT/FullAutoLog.txt");
     if(fi.exists()){
-        QString strLogSize = QString("%1 Byte, %2 K").arg(fi.size()).arg(QString::number(fi.size()/1000.0,'f',2));
+        QString strLogSize = QString("%1 Kb").arg(fi.size()/1000);
         ui->lb_Test_LogSize->setText(strLogSize);
         if(fi.size()/1000 >= 200){
             QFile::remove("/home/root/FullAutoQT/FullAutoLog.txt");
@@ -3925,111 +3922,31 @@ void TestInterface::on_pb_Test_ViewLog_clicked()
 
 /*
  *
- * 测试界面-查看日志按钮
- *
- */
-void TestInterface::on_pb_Test_LogView_clicked()
-{
-    //QFile fi(LogPath);
-    QString strFileName = LOGPATH + QString("%1.txt").arg(ui->de_Test_LogDate->date().toString("yyyy-MM-dd"));
-    m_LogView.OpenFile(strFileName);
-    QString strData = m_LogView.NextPage();
-    ui->tb_Test_ShowLog->clear();
-    ui->tb_Test_ShowLog->setText( strData );
-    ui->tb_Test_ShowLog->moveCursor(QTextCursor::Start);
-    ui->lb_Test_LogNote->setText("");
-    QString strLogPageInfo = QString("%1/%2").arg(m_LogView.GetCurPage()).arg(m_LogView.GetCountPage());
-    ui->lb_Test_LogPageInfo->setText(strLogPageInfo);
-}
-
-/*
- *
- * 测试界面-查看日志上一页按钮
- *
- */
-void TestInterface::on_pb_Test_LogViewPre_clicked()
-{
-    QString strPath = m_LogView.GetFilePath();
-    if(strPath.isEmpty()){
-        ui->lb_Test_LogNote->setText("没有打开日志文件,请先查询日志信息");
-        return;
-    }
-    QString strData = m_LogView.PrePage();
-    ui->tb_Test_ShowLog->clear();
-    ui->tb_Test_ShowLog->setText( strData );
-    ui->tb_Test_ShowLog->moveCursor(QTextCursor::Start);
-    QString strLogPageInfo = QString("%1/%2").arg(m_LogView.GetCurPage()).arg(m_LogView.GetCountPage());
-    ui->lb_Test_LogPageInfo->setText(strLogPageInfo);
-}
-
-/*
- *
- * 测试界面-查看日志下一页按钮
- *
- */
-void TestInterface::on_pb_Test_LogViewNext_clicked()
-{
-    QString strPath = m_LogView.GetFilePath();
-    if(strPath.isEmpty()){
-        ui->lb_Test_LogNote->setText("没有打开日志文件,请先查询日志信息");
-        return;
-    }
-    QString strData = m_LogView.NextPage();
-    ui->tb_Test_ShowLog->clear();
-    ui->tb_Test_ShowLog->setText( strData );
-    ui->tb_Test_ShowLog->moveCursor(QTextCursor::Start);
-    QString strLogPageInfo = QString("%1/%2").arg(m_LogView.GetCurPage()).arg(m_LogView.GetCountPage());
-    ui->lb_Test_LogPageInfo->setText(strLogPageInfo);
-}
-
-/*
- *
- * 测试界面-查看日志首页按钮
- *
- */
-void TestInterface::on_pb_Test_LogViewHead_clicked()
-{
-    QString strPath = m_LogView.GetFilePath();
-    if(strPath.isEmpty()){
-        ui->lb_Test_LogNote->setText("没有打开日志文件,请先查询日志信息");
-        return;
-    }
-    QString strData = m_LogView.HeadPage();
-    ui->tb_Test_ShowLog->clear();
-    ui->tb_Test_ShowLog->setText( strData );
-    ui->tb_Test_ShowLog->moveCursor(QTextCursor::Start);
-    QString strLogPageInfo = QString("%1/%2").arg(m_LogView.GetCurPage()).arg(m_LogView.GetCountPage());
-    ui->lb_Test_LogPageInfo->setText(strLogPageInfo);
-}
-
-/*
- *
- * 测试界面-查看日志尾页按钮
- *
- */
-void TestInterface::on_pb_Test_LogViewTail_clicked()
-{
-    QString strPath = m_LogView.GetFilePath();
-    if(strPath.isEmpty()){
-        ui->lb_Test_LogNote->setText("没有打开日志文件,请先查询日志信息");
-        return;
-    }
-    QString strData = m_LogView.TailPage();
-    ui->tb_Test_ShowLog->clear();
-    ui->tb_Test_ShowLog->setText( strData );
-    ui->tb_Test_ShowLog->moveCursor(QTextCursor::Start);
-    QString strLogPageInfo = QString("%1/%2").arg(m_LogView.GetCurPage()).arg(m_LogView.GetCountPage());
-    ui->lb_Test_LogPageInfo->setText(strLogPageInfo);
-}
-
-/*
- *
  * 测试界面-进入日志页面按钮
  *
  */
 void TestInterface::on_pb_Test_EnterLog_clicked()
 {
     ui->stackedWidget->setCurrentIndex(3);
+}
+
+/*
+ *
+ * 测试界面-查看日志按钮
+ *
+ */
+void TestInterface::on_pb_Test_LogView_clicked()
+{
+    //QFile fi(LogPath);
+    QFile fi("/home/root/FullAutoQT/FullAutoLog.txt");
+    if(fi.open(QIODevice::ReadOnly)){
+        QTextStream ts(&fi);
+        ts.setCodec("system");
+        QString strData = ts.readAll();
+        ui->tb_Test_ShowLog->clear();
+        ui->tb_Test_ShowLog->setText( strData );
+        ui->tb_Test_ShowLog->moveCursor(QTextCursor::End);
+    }
 }
 
 /*
@@ -4153,8 +4070,6 @@ void TestInterface::on_pb_Test_Effluent_clicked()
         m_settins->SetParam(EFFLUENTCURVALUE,QString::number(m_fEffluentCurValue));
     }
 }
-
-
 
 
 
