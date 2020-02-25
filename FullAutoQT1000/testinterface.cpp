@@ -2137,17 +2137,17 @@ void TestInterface::PacketTestInfoToQueue(QList<SampleObj> &listSampleInfo){
                 }
                 float fDiluentOffsetCoeff = m_settins->GetParam(DILUENTOFFSETCOEFF).toFloat();
                 float fDiluentOffsetConst = m_settins->GetParam(DILUENTOFFSETCONST).toFloat();
-                if(fDiluentOffsetCoeff>0){
+                if(fDiluentOffsetCoeff>0 || fDiluentOffsetConst>0){
                     int nTempBufferSize = static_cast<int>(fDiluentOffsetCoeff * nBufferSize + fDiluentOffsetConst);
-                    if(nTempBufferSize >= 6){
+                    if(nTempBufferSize >= 1){
                         nBufferSize = nTempBufferSize;
                     }
                 }
                 float fSampleOffsetCoeff = m_settins->GetParam(SAMPLEOFFSETCOEFF).toFloat();
                 float fSampleOffsetConst = m_settins->GetParam(SAMPLEOFFSETCONST).toFloat();
-                if(fSampleOffsetCoeff > 0){
+                if(fSampleOffsetCoeff > 0 || fSampleOffsetConst>0){
                     int nTempSampleSize = static_cast<int>(fSampleOffsetCoeff * nSampleSize + fSampleOffsetConst);
-                    if(nTempSampleSize >= 6){
+                    if(nTempSampleSize >= 1){
                         nSampleSize = nTempSampleSize;
                     }
                 }
